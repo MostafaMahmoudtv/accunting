@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config();
+// Load environment-specific .env file (.env.production in prod, .env otherwise).
+// Falls back to .env.development locally if .env is missing.
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: envFile });
 
 import express from 'express';
 import cors from 'cors';
@@ -133,7 +136,12 @@ const start = async () => {
     console.error('❌ FATAL: JWT_SECRET is required in production');
     process.exit(1);
   }
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('❌ FATAL: Database connection failed:', err.message);
+    process.exit(1);
+  }
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 API ready on http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`);
   });

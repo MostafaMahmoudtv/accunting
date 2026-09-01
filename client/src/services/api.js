@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const TOKEN_KEY = 'ledgerly_token';
+export const TOKEN_KEY = "ledgerly_token";
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (t) => {
@@ -9,7 +9,9 @@ export const setToken = (t) => {
 };
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    "https://web-production-fb0e0.up.railway.app/api",
   withCredentials: false,
 });
 
@@ -24,15 +26,15 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       const path = window.location.pathname;
-      if (!path.startsWith('/login') && !path.startsWith('/register')) {
+      if (!path.startsWith("/login") && !path.startsWith("/register")) {
         setToken(null);
-        if (!path.startsWith('/login')) {
-          window.location.replace('/login');
+        if (!path.startsWith("/login")) {
+          window.location.replace("/login");
         }
       }
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 export default api;

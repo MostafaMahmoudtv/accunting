@@ -1,1 +1,1 @@
-web: cd server && npm install --omit=dev && npm run build && npm start
+web: npm install --omit=dev && npm start

@@ -11,6 +11,7 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 ## ✨ Features
 
 ### Clients
+
 - Three client types: **monthly**, **temporary**, **one-time**
 - Recurring monthly billing, end-dates for temporary engagements
 - Payment status auto-derived from payments
@@ -18,6 +19,7 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 - Assignment to **accountants** and **customer service** staff
 
 ### Tasks
+
 - Full CRUD, status workflow (`new → in_progress → completed / cancelled`)
 - Priority, due dates, estimated vs. actual hours, price, payment status
 - **Table view** and **Kanban board** (drag-free status changer)
@@ -26,11 +28,13 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 - Visibility rules: non-managers see only their own tasks
 
 ### Workflows
+
 - Reusable multi-step pipelines (Bookkeeping, Tax Filing, etc.)
 - Step ordering and description
 - Assignable to tasks
 
 ### Payments & Revenue
+
 - Invoices with due date, payment method, payment status
 - Auto-derive client payment status (paid / partially_paid / overdue / unpaid)
 - Mark overdue based on due date
@@ -38,26 +42,31 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 - Statistics: outstanding, paid, monthly collections
 
 ### Expenses & Salaries
+
 - Expense categories (salary, marketing, office, software, hosting, transport, etc.)
 - Salaries with **base + bonus − deductions = net**, period (month/year)
 - Salaries restricted to **Super Admin / Manager**
 
 ### Employees & Team Performance
+
 - All team members and their roles + departments
 - Per-employee completion rate, workload, overdue count
 - Live team performance report
 
 ### Documents
+
 - Attach documents to clients / tasks / payments / expenses
 - **Local upload** in dev; structured so it can be swapped for Cloudinary / S3 in production
 - Served via a static `/uploads` route
 
 ### Notifications & Activity Log
+
 - In-app notifications: task assigned, payment overdue, new client, etc.
 - Mark as read / mark all as read
 - Full audit log of actions across the workspace
 
 ### Reports
+
 - **Financial**: revenue vs expenses, profit, outstanding
 - **Clients**: by type, top clients by revenue
 - **Team**: workload, completion rate, productivity
@@ -65,12 +74,14 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 - Recharts visualisations throughout
 
 ### Dashboard
+
 - Stat cards: total clients, monthly / temporary / one-time, active / completed / overdue tasks, pending & overdue payments
 - **Revenue / expenses / net profit** for the current month
 - Charts: revenue vs expenses, client distribution, task status, team workload
 - Recent activity feed and alerts (overdue tasks, due soon, overdue payments)
 
 ### Roles & Authorization (server-enforced)
+
 - **super_admin** — full access
 - **manager** — manage clients, tasks, employees, view reports & financial info
 - **accountant** — view assigned work, add notes, upload documents
@@ -78,12 +89,14 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 - **customer_service** — create clients, create work requests, track payments (no salaries, no company financials)
 
 ### i18n
+
 - **Arabic (default)** with full **RTL** layout
 - **English** with LTR
 - All UI strings, validation messages, and currency formatting localised
 - Language preference persisted in `localStorage`
 
 ### UI
+
 - Custom design system: brand & ink palettes, soft shadows, rounded cards
 - Sidebar + topbar layout, fully responsive
 - Collapsible mobile sidebar, mobile-friendly tables, RTL-aware components
@@ -94,12 +107,12 @@ Ledgerly is an internal SaaS for small accounting firms: it manages monthly, tem
 
 ## 🧱 Tech Stack
 
-| Layer | Tech |
-| --- | --- |
+| Layer    | Tech                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Frontend | React 18, Vite 5, React Router 6, TanStack Query 5, React Hook Form, Zod, Axios, Recharts, Lucide, Tailwind CSS, i18next |
-| Backend | Node.js, Express 4, Mongoose 8, JWT, bcryptjs, Helmet, express-rate-limit, multer |
-| Database | MongoDB (local or Atlas) |
-| Tooling | Concurrently, Nodemon, Vite, ESLint (optional) |
+| Backend  | Node.js, Express 4, Mongoose 8, JWT, bcryptjs, Helmet, express-rate-limit, multer                                        |
+| Database | MongoDB (local or Atlas)                                                                                                 |
+| Tooling  | Concurrently, Nodemon, Vite, ESLint (optional)                                                                           |
 
 ---
 
@@ -165,6 +178,7 @@ npm run install:all
 ### Environment Variables
 
 #### `server/.env`
+
 ```env
 PORT=5000
 MONGODB_URI=mongodb://127.0.0.1:27017/accounting-platform
@@ -175,8 +189,9 @@ NODE_ENV=development
 ```
 
 #### `client/.env`
+
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=https://web-production-fb0e0.up.railway.app/api
 ```
 
 > `.env.example` files are committed; real `.env` files are git-ignored.
@@ -193,7 +208,7 @@ npm run dev
 Or individually:
 
 ```bash
-npm run dev:server   # http://localhost:5000
+npm run dev:server   # https://web-production-fb0e0.up.railway.app
 npm run dev:client   # http://localhost:5173
 ```
 
@@ -211,17 +226,17 @@ This clears the database and inserts a realistic dataset (users, clients, tasks,
 
 All passwords: **`Password123!`**
 
-| Role | Email |
-| --- | --- |
-| Super Admin | `admin@demo.io` |
-| Manager | `manager@demo.io` |
-| Accountant | `accountant1@demo.io` |
-| Accountant | `accountant2@demo.io` |
-| Accountant | `accountant3@demo.io` |
-| Data Entry | `data1@demo.io` |
-| Data Entry | `data2@demo.io` |
-| Customer Service | `cs1@demo.io` |
-| Customer Service | `cs2@demo.io` |
+| Role             | Email                 |
+| ---------------- | --------------------- |
+| Super Admin      | `admin@demo.io`       |
+| Manager          | `manager@demo.io`     |
+| Accountant       | `accountant1@demo.io` |
+| Accountant       | `accountant2@demo.io` |
+| Accountant       | `accountant3@demo.io` |
+| Data Entry       | `data1@demo.io`       |
+| Data Entry       | `data2@demo.io`       |
+| Customer Service | `cs1@demo.io`         |
+| Customer Service | `cs2@demo.io`         |
 
 The login page has one-click **"Use demo"** buttons that pre-fill each account.
 
@@ -248,40 +263,50 @@ Output for the frontend is in `client/dist`.
 
 All endpoints are under `/api`. Authenticated endpoints require a `Bearer` JWT in the `Authorization` header.
 
-| Endpoint | Description |
-| --- | --- |
-| `POST /auth/register` | Register (first user becomes super admin) |
-| `POST /auth/login` | Sign in, returns `{ token, user }` |
-| `POST /auth/logout` | Sign out (logs activity) |
-| `GET  /auth/me` | Get current user |
-| `GET  /users` · `POST /users` · `PUT /users/:id` · `DELETE /users/:id` | User management (super_admin / manager) |
-| `GET  /clients` · `POST` · `PUT /:id` · `DELETE /:id` | Clients (filtering, pagination, search) |
-| `GET  /clients/:id/summary` | Client tasks + payments |
-| `POST /clients/:id/notes` | Add note to client |
-| `GET  /tasks` · `POST` · `PUT` · `DELETE` | Tasks (table + filters) |
-| `GET  /tasks/kanban` | Kanban board view |
-| `PATCH /tasks/:id/status` | Quick status change |
-| `POST /tasks/:id/comments` | Add a comment |
-| `GET  /workflows` · `POST` · `PUT` · `DELETE` | Workflows (manager+ create) |
-| `GET  /payments` · `POST` · `PUT` · `DELETE` · `/stats` | Payments |
-| `GET  /revenue` · `POST` · `PUT` · `DELETE` | Revenue |
-| `GET  /expenses` · `POST` · `PUT` · `DELETE` | Expenses |
-| `GET  /salaries` · `POST` · `PUT` · `DELETE` · `/me` | Salaries |
-| `GET  /notifications` · `PUT /:id/read` · `PUT /read-all` · `DELETE` | Notifications |
-| `GET  /activity` | Activity log (paginated, filterable) |
-| `GET  /documents` · `POST` · `DELETE` | Documents (multipart upload) |
-| `GET  /dashboard/stats` · `/activity` · `/alerts` | Dashboard data |
-| `GET  /reports/financial` · `/clients` · `/team` · `/expense-breakdown` | Reports |
-| `GET  /search?q=...` | Global search across clients / tasks / users / payments / expenses |
+| Endpoint                                                                | Description                                                        |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `POST /auth/register`                                                   | Register (first user becomes super admin)                          |
+| `POST /auth/login`                                                      | Sign in, returns `{ token, user }`                                 |
+| `POST /auth/logout`                                                     | Sign out (logs activity)                                           |
+| `GET  /auth/me`                                                         | Get current user                                                   |
+| `GET  /users` · `POST /users` · `PUT /users/:id` · `DELETE /users/:id`  | User management (super_admin / manager)                            |
+| `GET  /clients` · `POST` · `PUT /:id` · `DELETE /:id`                   | Clients (filtering, pagination, search)                            |
+| `GET  /clients/:id/summary`                                             | Client tasks + payments                                            |
+| `POST /clients/:id/notes`                                               | Add note to client                                                 |
+| `GET  /tasks` · `POST` · `PUT` · `DELETE`                               | Tasks (table + filters)                                            |
+| `GET  /tasks/kanban`                                                    | Kanban board view                                                  |
+| `PATCH /tasks/:id/status`                                               | Quick status change                                                |
+| `POST /tasks/:id/comments`                                              | Add a comment                                                      |
+| `GET  /workflows` · `POST` · `PUT` · `DELETE`                           | Workflows (manager+ create)                                        |
+| `GET  /payments` · `POST` · `PUT` · `DELETE` · `/stats`                 | Payments                                                           |
+| `GET  /revenue` · `POST` · `PUT` · `DELETE`                             | Revenue                                                            |
+| `GET  /expenses` · `POST` · `PUT` · `DELETE`                            | Expenses                                                           |
+| `GET  /salaries` · `POST` · `PUT` · `DELETE` · `/me`                    | Salaries                                                           |
+| `GET  /notifications` · `PUT /:id/read` · `PUT /read-all` · `DELETE`    | Notifications                                                      |
+| `GET  /activity`                                                        | Activity log (paginated, filterable)                               |
+| `GET  /documents` · `POST` · `DELETE`                                   | Documents (multipart upload)                                       |
+| `GET  /dashboard/stats` · `/activity` · `/alerts`                       | Dashboard data                                                     |
+| `GET  /reports/financial` · `/clients` · `/team` · `/expense-breakdown` | Reports                                                            |
+| `GET  /search?q=...`                                                    | Global search across clients / tasks / users / payments / expenses |
 
 ### Response shape
 
 ```json
-{ "success": true, "data": { /* ... */ }, "meta": { "page": 1, "limit": 20, "total": 123, "totalPages": 7 } }
+{
+  "success": true,
+  "data": {
+    /* ... */
+  },
+  "meta": { "page": 1, "limit": 20, "total": 123, "totalPages": 7 }
+}
 ```
 
 ```json
-{ "success": false, "message": "Validation failed", "errors": [ { "field": "email", "message": "Invalid" } ] }
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [{ "field": "email", "message": "Invalid" }]
+}
 ```
 
 ---
