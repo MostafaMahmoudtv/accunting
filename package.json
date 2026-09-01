@@ -1,0 +1,25 @@
+{
+  "name": "accounting-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Accounting Practice Management Platform built with the MERN stack",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n SERVER,CLIENT -c blue,magenta \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace server && npm run build --workspace client",
+    "seed": "npm run seed --workspace server",
+    "start": "npm run start --workspace server",
+    "install:all": "npm install && npm install --workspace client && npm install --workspace server"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
