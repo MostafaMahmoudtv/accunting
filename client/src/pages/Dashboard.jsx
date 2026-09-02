@@ -40,7 +40,7 @@ import StatusBadge from '../components/ui/StatusBadge';
 import EmptyState from '../components/ui/EmptyState';
 import { fmtDate } from '../utils/format';
 
-const PIE_COLORS = ['#3266ff', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
+const PIE_COLORS = ['#0073ff', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
@@ -275,7 +275,7 @@ const Dashboard = () => {
           <div className="space-y-2">
             {activity?.length ? (
               activity.map((a) => (
-                <div key={a._id} className="flex items-start gap-3 py-2 border-b border-ink-100 dark:border-ink-800 last:border-b-0">
+                <div key={a._id} className="flex items-start gap-3 py-2 border-b border-app-border last:border-b-0">
                   <div className="h-8 w-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-semibold shrink-0">
                     {(a.user?.name || 'U').split(' ').map((p) => p[0]).slice(0, 2).join('')}
                   </div>

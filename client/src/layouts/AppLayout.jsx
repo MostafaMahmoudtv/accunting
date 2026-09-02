@@ -19,7 +19,7 @@ const AppLayout = () => {
   }, [open]);
 
   return (
-    <div className="min-h-screen flex bg-ink-50 dark:bg-ink-900/40">
+    <div className="min-h-screen flex bg-app">
       <Sidebar open={open} onClose={() => setOpen(false)} />
       <div className="flex-1 min-w-0 flex flex-col">
         <Topbar onToggleSidebar={() => setOpen((v) => !v)} />

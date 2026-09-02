@@ -46,6 +46,8 @@
     "submit": "Submit",
     "upload": "Upload",
     "language": "Language",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode",
     "logout": "Logout",
     "profile": "Profile",
     "settings": "Settings",

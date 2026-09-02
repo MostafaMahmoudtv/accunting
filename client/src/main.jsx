@@ -7,7 +7,8 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import './i18n';
-import './index.css';
+import './index.css'
+import './theme-classes';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +30,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Toaster
               position="top-center"
               toastOptions={{
-                className: 'dark:bg-ink-800 dark:text-white',
+                className: 'bg-app-card text-app-heading',
                 duration: 3500,
               }}
             />

@@ -47,7 +47,7 @@ const TaskDetail = () => {
   return (
     <div className="space-y-4 sm:space-y-5">
       <div className="flex items-center gap-2 sm:gap-3">
-        <Link to="/tasks" className="p-2 -ms-2 rounded-lg hover:bg-ink-100 dark:hover:bg-ink-800 shrink-0">
+        <Link to="/tasks" className="p-2 -ms-2 rounded-lg hover:bg-app-muted shrink-0">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div className="flex-1 min-w-0">
@@ -68,7 +68,7 @@ const TaskDetail = () => {
         <div className="lg:col-span-2 space-y-4 sm:space-y-5">
           <div className="card p-4 sm:p-5">
             <h3 className="text-sm font-semibold mb-2">{t('common.description')}</h3>
-            <p className="text-sm text-ink-600 dark:text-ink-300 whitespace-pre-wrap break-words">{task.description || '—'}</p>
+            <p className="text-sm text-app-muted whitespace-pre-wrap break-words">{task.description || '—'}</p>
           </div>
 
           <div className="card p-4 sm:p-5">
@@ -91,7 +91,7 @@ const TaskDetail = () => {
             </form>
             <div className="mt-4 space-y-2">
               {task.comments?.map((c) => (
-                <div key={c._id} className="p-3 rounded-xl border border-ink-100 dark:border-ink-800">
+                <div key={c._id} className="p-3 rounded-xl border border-app-border">
                   <div className="text-sm break-words">{c.text}</div>
                   <div className="text-[11px] text-ink-500 mt-1">{c.createdBy?.name || '—'} • {fmtRelative(c.createdAt, i18n.language)}</div>
                 </div>
@@ -121,7 +121,7 @@ const TaskDetail = () => {
                   key={s}
                   onClick={() => statusMut.mutate(s)}
                   className={`text-xs px-2 py-1.5 rounded-lg border touch-manipulation ${
-                    task.status === s ? 'bg-brand-600 text-white border-brand-600' : 'border-ink-200 dark:border-ink-700 hover:bg-ink-50 dark:hover:bg-ink-800'
+                    task.status === s ? 'bg-brand-500 text-white border-brand-500' : 'border-app-border hover:bg-app-muted'
                   }`}
                 >
                   {t(`tasks.status.${s}`)}
@@ -137,7 +137,7 @@ const TaskDetail = () => {
 
 const Field = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-2.5">
-    <div className="h-8 w-8 rounded-lg bg-ink-100 dark:bg-ink-800 flex items-center justify-center shrink-0">
+    <div className="h-8 w-8 rounded-lg bg-app-muted flex items-center justify-center shrink-0">
       <Icon className="h-3.5 w-3.5 text-ink-500" />
     </div>
     <div className="min-w-0">

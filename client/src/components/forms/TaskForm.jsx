@@ -22,7 +22,6 @@ const schema = (t) =>
     dueDate: z.string().optional(),
     estimatedHours: z.coerce.number().min(0).optional(),
     actualHours: z.coerce.number().min(0).optional(),
-    price: z.coerce.number().min(0).optional(),
     paymentStatus: z.enum(PAYMENT_STATUS).optional(),
   });
 
@@ -95,7 +94,6 @@ const TaskForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
         <FormInput label={t('tasks.fields.dueDate')} type="date" {...register('dueDate')} />
         <FormInput label={t('tasks.fields.estimatedHours')} type="number" step="0.5" {...register('estimatedHours')} />
         <FormInput label={t('tasks.fields.actualHours')} type="number" step="0.5" {...register('actualHours')} />
-        <FormInput label={t('tasks.fields.price')} type="number" step="0.01" {...register('price')} />
         <FormSelect label={t('tasks.fields.paymentStatus')} {...register('paymentStatus')}>
           {PAYMENT_STATUS.map((p) => (
             <option key={p} value={p}>{t(`common.${p === 'partially_paid' ? 'partial' : p}`)}</option>

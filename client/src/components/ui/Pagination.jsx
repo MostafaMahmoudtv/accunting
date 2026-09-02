@@ -42,7 +42,7 @@ const Pagination = ({ page, totalPages, onPage }) => {
                 'h-8 min-w-[2rem] px-2 rounded-lg text-xs font-medium touch-manipulation',
                 p === page
                   ? 'bg-brand-600 text-white'
-                  : 'hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-200'
+                  : 'hover:bg-app-muted text-app-heading'
               )}
             >
               {p}

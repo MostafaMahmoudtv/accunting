@@ -56,7 +56,7 @@ const Reports = () => {
         <p className="text-xs sm:text-sm text-ink-500 mt-1">{t('reports.subtitle')}</p>
       </div>
 
-      <div className="border-b border-ink-100 dark:border-ink-800 flex items-center gap-1 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+      <div className="border-b border-app-border flex items-center gap-1 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
         {TABS.map((key) => (
           <button
             key={key}
@@ -128,7 +128,7 @@ const Reports = () => {
             {clients.top?.length ? (
               <div className="space-y-2">
                 {clients.top.map((row, idx) => (
-                  <div key={row.client?._id || idx} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-ink-50 dark:hover:bg-ink-800">
+                  <div key={row.client?._id || idx} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-app-muted">
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                       <div className="h-8 w-8 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center shrink-0">{idx + 1}</div>
                       <div className="min-w-0">
@@ -150,7 +150,7 @@ const Reports = () => {
       {tab === 'team' && team && (
         <div className="card p-1">
           {/* Mobile: card list */}
-          <div className="md:hidden divide-y divide-ink-100 dark:divide-ink-800">
+          <div className="md:hidden divide-y divide-app-border">
             {team.map((row) => (
               <div key={row.user._id} className="p-3 space-y-2">
                 <div className="flex items-center justify-between gap-2">
@@ -175,7 +175,7 @@ const Reports = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-1.5 flex-1 rounded-full bg-ink-100 dark:bg-ink-800 overflow-hidden">
+                  <div className="h-1.5 flex-1 rounded-full bg-app-muted overflow-hidden">
                     <div className="h-full bg-brand-500" style={{ width: `${row.completionRate}%` }} />
                   </div>
                   <span className="text-xs font-semibold shrink-0">{row.completionRate}%</span>
@@ -209,7 +209,7 @@ const Reports = () => {
                     <td className="text-rose-600">{row.overdue}</td>
                     <td>
                       <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-24 rounded-full bg-ink-100 dark:bg-ink-800 overflow-hidden">
+                        <div className="h-1.5 w-24 rounded-full bg-app-muted overflow-hidden">
                           <div className="h-full bg-brand-500" style={{ width: `${row.completionRate}%` }} />
                         </div>
                         <span className="text-xs font-semibold">{row.completionRate}%</span>
@@ -243,7 +243,7 @@ const Reports = () => {
               </div>
               <div className="space-y-2">
                 {expenses.map((row) => (
-                  <div key={row.category} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-ink-50 dark:hover:bg-ink-800">
+                  <div key={row.category} className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-app-muted">
                     <span className="truncate text-sm">{t(`expenses.categories.${row.category}`)}</span>
                     <span className="font-semibold text-sm shrink-0">{fmtMoney(row.total, 'SAR', i18n.language)}</span>
                   </div>

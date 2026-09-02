@@ -16,6 +16,37 @@ import { TASK_STATUS, TASK_PRIORITY } from '../utils/constants';
 import { fmtDate } from '../utils/format';
 import clsx from 'clsx';
 
+// Map task priority → border/accent color tokens used to tint each row/card.
+// Designed to stay readable in both light and dark themes.
+const PRIORITY_ROW_STYLE = {
+  low: {
+    border: 'border-l-emerald-500',
+    bg: 'bg-emerald-50/60 dark:bg-emerald-500/10',
+    accent: 'bg-emerald-500',
+  },
+  medium: {
+    border: 'border-l-sky-500',
+    bg: 'bg-sky-50/60 dark:bg-sky-500/10',
+    accent: 'bg-sky-500',
+  },
+  high: {
+    border: 'border-l-amber-500',
+    bg: 'bg-amber-50/60 dark:bg-amber-500/10',
+    accent: 'bg-amber-500',
+  },
+  urgent: {
+    border: 'border-l-rose-500',
+    bg: 'bg-rose-50/60 dark:bg-rose-500/10',
+    accent: 'bg-rose-500',
+  },
+};
+
+const priorityRowClass = (row) => {
+  const style = PRIORITY_ROW_STYLE[row?.priority];
+  if (!style) return '';
+  return clsx('border-l-4', style.border, style.bg);
+};
+
 const Tasks = () => {
   const { t, i18n } = useTranslation();
   const qc = useQueryClient();
@@ -122,19 +153,19 @@ const Tasks = () => {
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{t('tasks.title')}</h1>
-          <p className="text-xs sm:text-sm text-ink-500 mt-1">{t('tasks.subtitle')}</p>
+          <p className="text-xs sm:text-sm text-app-muted mt-1">{t('tasks.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto">
           <div className="card p-1 flex items-center gap-1">
             <button
               onClick={() => setView('table')}
-              className={clsx('px-2.5 sm:px-3 py-1.5 text-xs rounded-lg flex items-center gap-1.5 touch-manipulation', view === 'table' ? 'bg-brand-600 text-white' : 'text-ink-600')}
+              className={clsx('px-2.5 sm:px-3 py-1.5 text-xs rounded-lg flex items-center gap-1.5 touch-manipulation', view === 'table' ? 'bg-brand-500 text-white' : 'text-app-heading')}
             >
               <ListIcon className="h-3.5 w-3.5" /> <span className="hidden xs:inline sm:inline">{t('tasks.table')}</span>
             </button>
             <button
               onClick={() => setView('kanban')}
-              className={clsx('px-2.5 sm:px-3 py-1.5 text-xs rounded-lg flex items-center gap-1.5 touch-manipulation', view === 'kanban' ? 'bg-brand-600 text-white' : 'text-ink-600')}
+              className={clsx('px-2.5 sm:px-3 py-1.5 text-xs rounded-lg flex items-center gap-1.5 touch-manipulation', view === 'kanban' ? 'bg-brand-500 text-white' : 'text-app-heading')}
             >
               <LayoutGrid className="h-3.5 w-3.5" /> <span className="hidden xs:inline sm:inline">{t('tasks.kanban')}</span>
             </button>
@@ -147,7 +178,7 @@ const Tasks = () => {
         <>
           <div className="card p-2.5 sm:p-3 flex flex-wrap items-center gap-2">
             <div className="relative flex-1 min-w-[180px] sm:min-w-[200px]">
-              <Search className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-ink-400 pointer-events-none" />
+              <Search className="absolute top-1/2 -translate-y-1/2 start-3 h-4 w-4 text-app-muted pointer-events-none" />
               <input
                 value={filters.q}
                 onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
@@ -180,7 +211,7 @@ const Tasks = () => {
             </Button>
           </div>
           <div className="card p-1">
-            <DataTable columns={columns} rows={items} loading={isLoading} />
+            <DataTable columns={columns} rows={items} loading={isLoading} rowClassName={priorityRowClass} />
             <div className="px-3 pb-3">
               <Pagination page={meta.page} totalPages={meta.totalPages} onPage={setPage} />
             </div>
@@ -194,19 +225,22 @@ const Tasks = () => {
             {columnsKanban.map((status) => (
               <div key={status} className="w-72 sm:w-72 card p-3 flex flex-col shrink-0 snap-start">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold">{t(`tasks.status.${status}`)}</h3>
-                  <span className="text-xs text-ink-500 bg-ink-100 dark:bg-ink-800 rounded-full px-2 py-0.5">
+                  <h3 className="text-sm font-semibold text-app-heading">{t(`tasks.status.${status}`)}</h3>
+                  <span className="text-xs text-app-muted bg-app-muted rounded-full px-2 py-0.5">
                     {kanban?.filter((k) => k.status === status).length || 0}
                   </span>
                 </div>
                 <div className="space-y-2 flex-1">
-                  {kanban?.filter((k) => k.status === status).map((task) => (
+                  {kanban?.filter((k) => k.status === status).map((task) => {
+                    const accent = PRIORITY_ROW_STYLE[task.priority]?.accent || 'bg-ink-300';
+                    return (
                     <div
                       key={task._id}
-                      className="p-2.5 rounded-xl bg-white dark:bg-ink-800 border border-ink-100 dark:border-ink-700 shadow-sm hover:shadow-soft transition"
+                      className="relative p-2.5 ps-3 rounded-xl bg-app-card border border-app-border shadow-sm hover:shadow-soft transition overflow-hidden"
                     >
-                      <Link to={`/tasks/${task._id}`} className="text-sm font-medium block truncate">{task.title}</Link>
-                      <div className="text-[11px] text-ink-500 mt-1 flex items-center gap-1.5">
+                      <span className={clsx('absolute top-0 bottom-0 start-0 w-1', accent)} aria-hidden="true" />
+                      <Link to={`/tasks/${task._id}`} className="text-sm font-medium block truncate text-app-heading">{task.title}</Link>
+                      <div className="text-[11px] text-app-muted mt-1 flex items-center gap-1.5">
                         {task.client?.name && <span className="truncate">{task.client.name}</span>}
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-1">
@@ -214,17 +248,18 @@ const Tasks = () => {
                         <select
                           value={task.status}
                           onChange={(e) => statusMut.mutate({ id: task._id, status: e.target.value })}
-                          className="text-[10px] bg-white dark:bg-ink-900 text-ink-700 dark:text-ink-200 border border-ink-200 dark:border-ink-700 rounded px-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 max-w-[6.5rem] truncate"
+                          className="text-[10px] bg-app-card text-app-heading border border-app-border rounded px-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500/30 max-w-[6.5rem] truncate"
                         >
                           {TASK_STATUS.map((s) => (
-                            <option key={s} value={s} className="bg-white dark:bg-ink-900 text-ink-700 dark:text-ink-200">{t(`tasks.status.${s}`)}</option>
+                            <option key={s} value={s} className="bg-app-card text-app-heading">{t(`tasks.status.${s}`)}</option>
                           ))}
                         </select>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                   {!kanban?.filter((k) => k.status === status).length && (
-                    <div className="text-xs text-ink-400 text-center py-4 border border-dashed border-ink-200 dark:border-ink-700 rounded-xl">
+                    <div className="text-xs text-app-muted text-center py-4 border border-dashed border-app-border rounded-xl">
                       —
                     </div>
                   )}

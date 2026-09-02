@@ -13,6 +13,7 @@ import { ChevronDown } from 'lucide-react';
  *  - empty
  *  - onRowClick
  *  - rowKey
+ *  - rowClassName: (row) => string — extra classes per row (e.g. priority-based coloring)
  *  - mobileBreakpoint: 'sm' | 'md' (default 'md') — below this, rows render as cards
  */
 const DataTable = ({
@@ -23,6 +24,7 @@ const DataTable = ({
   className,
   rowKey = '_id',
   onRowClick,
+  rowClassName,
   mobileBreakpoint = 'md',
 }) => {
   const { t } = useTranslation();
@@ -71,7 +73,10 @@ const DataTable = ({
                   <tr
                     key={r[rowKey]}
                     onClick={onRowClick ? () => onRowClick(r) : undefined}
-                    className={onRowClick ? 'cursor-pointer' : ''}
+                    className={clsx(
+                      onRowClick ? 'cursor-pointer' : '',
+                      rowClassName ? rowClassName(r) : ''
+                    )}
                   >
                     {columns.map((c) => (
                       <td
@@ -118,6 +123,7 @@ const DataTable = ({
                 secondaryCols={secondaryCols}
                 actionCol={actionCol}
                 onRowClick={onRowClick}
+                rowClassName={rowClassName}
               />
             ))
           : (
@@ -134,7 +140,7 @@ const DataTable = ({
   );
 };
 
-const MobileCard = ({ row, primaryCol, secondaryCols, actionCol, onRowClick }) => {
+const MobileCard = ({ row, primaryCol, secondaryCols, actionCol, onRowClick, rowClassName }) => {
   const [expanded, setExpanded] = useState(false);
   const hasMore = secondaryCols.length > 0;
 
@@ -142,7 +148,8 @@ const MobileCard = ({ row, primaryCol, secondaryCols, actionCol, onRowClick }) =
     <div
       className={clsx(
         'card p-3',
-        onRowClick && 'cursor-pointer active:scale-[0.99] transition'
+        onRowClick && 'cursor-pointer active:scale-[0.99] transition',
+        rowClassName ? rowClassName(row) : ''
       )}
       onClick={onRowClick ? () => onRowClick(row) : undefined}
     >
@@ -164,7 +171,7 @@ const MobileCard = ({ row, primaryCol, secondaryCols, actionCol, onRowClick }) =
             </div>
           )}
           {expanded && (
-            <div className="mt-2 space-y-1.5 border-t border-ink-100 dark:border-ink-800 pt-2">
+            <div className="mt-2 space-y-1.5 border-t border-app-border pt-2">
               {secondaryCols.map((c) => (
                 <div key={c.key} className="flex items-center justify-between gap-2 text-xs">
                   <span className="text-ink-500 shrink-0">{c.header}</span>
@@ -189,7 +196,7 @@ const MobileCard = ({ row, primaryCol, secondaryCols, actionCol, onRowClick }) =
                 e.stopPropagation();
                 setExpanded((v) => !v);
               }}
-              className="p-1.5 rounded-lg hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-500"
+              className="p-1.5 rounded-lg hover:bg-app-muted text-app-muted"
               aria-label="Toggle details"
             >
               <ChevronDown

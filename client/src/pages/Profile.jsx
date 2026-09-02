@@ -33,7 +33,7 @@ const Profile = () => {
 
 const Field = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-2.5 min-w-0">
-    <div className="h-9 w-9 rounded-xl bg-ink-100 dark:bg-ink-800 flex items-center justify-center shrink-0">
+    <div className="h-9 w-9 rounded-xl bg-app-muted flex items-center justify-center shrink-0">
       <Icon className="h-4 w-4 text-ink-500" />
     </div>
     <div className="min-w-0 flex-1">

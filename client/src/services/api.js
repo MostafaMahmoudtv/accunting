@@ -10,8 +10,7 @@ export const setToken = (t) => {
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_URL ||
-    "https://web-production-fb0e0.up.railway.app/api",
+    import.meta.env.VITE_API_URL || "https://accunting-client.vercel.app/api",
   withCredentials: false,
 });
 

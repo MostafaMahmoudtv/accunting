@@ -2,14 +2,37 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/1.jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Ledgerly — Accounting Practice Platform</title>
+    <title>Accounting Practice Platform</title>
   </head>
   <body>
+    <script>
+      // Read the user's stored theme preference and apply it BEFORE React mounts
+      // so the first paint matches the chosen theme. Defaults to LIGHT (bright/clear UI).
+      (function () {
+        try {
+          var stored = localStorage.getItem('ledgerly_theme');
+          // FORCE light mode on first load if the stored value predates this
+          // theme rewrite (detected by absence of an explicit 'light' marker).
+          // Users who actively pick dark from the toggle will have 'dark' set
+          // and continue to be honored.
+          var theme = stored === 'dark' ? 'dark' : 'light';
+          // Always strip both classes first — only add 'dark' when actually dark,
+          // so the Tailwind `dark:` variant never applies in light mode.
+          document.documentElement.classList.remove('light', 'dark');
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+        } catch (_) {
+          document.documentElement.classList.remove('light', 'dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

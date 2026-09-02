@@ -60,9 +60,9 @@ const SalaryForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
         </FormSelect>
         <FormInput label={t('salaries.month')} type="number" min="1" max="12" {...register('periodMonth', { required: true })} />
         <FormInput label={t('salaries.year')} type="number" {...register('periodYear', { required: true })} />
-        <div className="md:col-span-2 p-3 rounded-xl bg-ink-50 dark:bg-ink-800 text-sm font-semibold flex items-center justify-between">
+        <div className="md:col-span-2 p-3 rounded-xl bg-app-muted text-sm font-semibold flex items-center justify-between text-app-heading border border-app-border">
           <span>{t('salaries.netSalary')}</span>
-          <span>{net.toFixed(2)}</span>
+          <span className="text-brand-500">{net.toFixed(2)}</span>
         </div>
         <FormTextarea label={t('common.notes')} className="md:col-span-2" {...register('notes')} />
       </div>

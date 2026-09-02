@@ -38,7 +38,7 @@ class ErrorBoundary extends Component {
         <div className="min-h-screen flex items-center justify-center p-6 bg-rose-50">
           <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-6 border border-rose-200">
             <h1 className="text-xl font-bold text-rose-700 mb-2">Something went wrong</h1>
-            <p className="text-sm text-ink-600 mb-3">
+            <p className="text-sm text-app-muted mb-3">
               The application crashed while rendering. The full error is logged to the browser console (F12).
             </p>
             <pre className="text-xs bg-ink-900 text-rose-200 p-3 rounded-lg overflow-auto whitespace-pre-wrap">

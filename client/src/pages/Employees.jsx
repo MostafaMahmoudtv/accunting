@@ -89,7 +89,7 @@ const Employees = () => {
                   <span>{t('employees.completionRate')}</span>
                   <span className="font-semibold">{r.completionRate}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-ink-100 dark:bg-ink-800 overflow-hidden">
+                <div className="h-2 rounded-full bg-app-muted overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-brand-500 to-brand-700"
                     style={{ width: `${r.completionRate}%` }}

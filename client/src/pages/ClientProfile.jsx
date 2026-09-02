@@ -130,7 +130,7 @@ const ClientProfile = () => {
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
           to="/clients"
-          className="p-2 -ms-2 rounded-lg hover:bg-ink-100 dark:hover:bg-ink-800 shrink-0"
+          className="p-2 -ms-2 rounded-lg hover:bg-app-muted shrink-0"
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
@@ -206,7 +206,7 @@ const ClientProfile = () => {
         />
       </div>
 
-      <div className="border-b border-ink-100 dark:border-ink-800 flex items-center gap-1 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+      <div className="border-b border-app-border flex items-center gap-1 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
         {TABS.map((key) => (
           <button
             key={key}
@@ -254,12 +254,12 @@ const ClientProfile = () => {
       {tab === "tasks" && (
         <div className="card p-1">
           {summary?.tasks?.length ? (
-            <div className="divide-y divide-ink-100 dark:divide-ink-800">
+            <div className="divide-y divide-app-border">
               {summary.tasks.map((task) => (
                 <Link
                   key={task._id}
                   to={`/tasks/${task._id}`}
-                  className="flex items-center justify-between gap-2 p-3 hover:bg-ink-50 dark:hover:bg-ink-800"
+                  className="flex items-center justify-between gap-2 p-3 hover:bg-app-muted"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-medium truncate text-sm">
@@ -294,7 +294,7 @@ const ClientProfile = () => {
           {summary?.payments?.length ? (
             <>
               {/* Mobile: card list */}
-              <div className="md:hidden divide-y divide-ink-100 dark:divide-ink-800">
+              <div className="md:hidden divide-y divide-app-border">
                 {summary.payments.map((p) => (
                   <div key={p._id} className="p-3 space-y-1">
                     <div className="flex items-center justify-between gap-2">
@@ -375,7 +375,7 @@ const ClientProfile = () => {
             </label>
           </div>
           {documents?.length ? (
-            <ul className="divide-y divide-ink-100 dark:divide-ink-800">
+            <ul className="divide-y divide-app-border">
               {documents.map((doc) => (
                 <li key={doc._id} className="flex items-center gap-3 py-2.5">
                   <div className="h-9 w-9 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
@@ -392,7 +392,7 @@ const ClientProfile = () => {
                     href={
                       doc.url.startsWith("http")
                         ? doc.url
-                        : `${import.meta.env.VITE_API_URL?.replace("/api", "") || "https://web-production-fb0e0.up.railway.app"}${doc.url}`
+                        : `${import.meta.env.VITE_API_URL?.replace("/api", "") || "https://accunting-client.vercel.app"}${doc.url}`
                     }
                     target="_blank"
                     rel="noreferrer"
@@ -434,7 +434,7 @@ const ClientProfile = () => {
               {client.timeline.map((n) => (
                 <div
                   key={n._id}
-                  className="p-3 rounded-xl border border-ink-100 dark:border-ink-800"
+                  className="p-3 rounded-xl border border-app-border bg-app-card"
                 >
                   <p className="text-sm whitespace-pre-wrap">{n.content}</p>
                   <div className="text-[11px] text-ink-500 mt-1.5">
@@ -520,7 +520,7 @@ const ClientProfile = () => {
 
 const Field = ({ icon: Icon, label, value }) => (
   <div className="flex items-start gap-2.5 min-w-0">
-    <div className="h-9 w-9 rounded-xl bg-ink-100 dark:bg-ink-800 flex items-center justify-center shrink-0">
+    <div className="h-9 w-9 rounded-xl bg-app-muted flex items-center justify-center shrink-0">
       <Icon className="h-4 w-4 text-ink-500" />
     </div>
     <div className="min-w-0 flex-1">

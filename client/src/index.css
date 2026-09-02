@@ -2,36 +2,110 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   THEME TOKENS
+   Light mode is the DEFAULT and is tuned for clarity.
+   Dark mode overrides via [data-theme='dark'] on <html>.
+   The :root selector provides the light defaults; the
+   html[data-theme='dark'] rule (with HIGHER specificity)
+   wins whenever the user has picked dark.
+   ============================================================ */
+
 :root {
   color-scheme: light;
-  --background: 246 247 250;
-  --foreground: 31 35 48;
-  --card: 255 255 255;
-  --muted: 236 238 242;
-  --muted-foreground: 103 114 137;
-  --border: 213 217 226;
-  --primary: 50 102 255;
+  --background: 248 250 252;       /* slate-50  — bright off-white app background */
+  --foreground: 15 23 42;          /* slate-900 — strong text */
+  --card: 255 255 255;             /* pure white cards */
+  --muted: 241 245 249;            /* slate-100 — soft surfaces (chips, table head) */
+  --muted-foreground: 71 85 105;   /* slate-600 — secondary text, still readable */
+  --border: 226 232 240;           /* slate-200 — defined but soft borders */
+  --ring: 0 115 255;               /* brand-500 */
+  --primary: 0 115 255;            /* brand-500 — vivid action blue */
   --primary-foreground: 255 255 255;
-  --success: 22 163 74;
-  --warning: 217 119 6;
-  --danger: 220 38 38;
-  --info: 14 165 233;
+  --primary-hover: 0 88 204;       /* brand-600 */
+  --success: 16 185 129;           /* emerald-500 */
+  --success-soft: 209 250 229;     /* emerald-100 */
+  --warning: 245 158 11;           /* amber-500 */
+  --warning-soft: 254 243 199;     /* amber-100 */
+  --danger: 220 38 38;             /* red-600 */
+  --danger-soft: 254 226 226;      /* red-100 */
+  --info: 14 165 233;              /* sky-500 */
+  --info-soft: 224 242 254;        /* sky-100 */
+  --sidebar: 255 255 255;
+  --topbar: 255 255 255;
+  --shadow: 15 23 42;
 }
 
-html.dark {
+/* Dark theme — use higher specificity (two attribute selectors) so it
+   always wins over the :root defaults when data-theme='dark' is set. */
+html[data-theme='dark'] {
   color-scheme: dark;
-  --background: 17 20 28;
-  --foreground: 226 230 240;
-  --card: 24 28 38;
-  --muted: 33 39 53;
-  --muted-foreground: 148 158 184;
-  --border: 45 52 70;
-  --primary: 89 140 255;
+  --background: 15 23 42;
+  --foreground: 226 232 240;
+  --card: 30 41 59;
+  --muted: 51 65 85;
+  --muted-foreground: 148 163 184;
+  --border: 51 65 85;
+  --ring: 51 143 255;
+  --primary: 51 143 255;
   --primary-foreground: 255 255 255;
-  --success: 34 197 94;
-  --warning: 234 179 8;
+  --primary-hover: 102 171 255;
+  --success: 52 211 153;
+  --success-soft: 6 78 59;
+  --warning: 251 191 36;
+  --warning-soft: 120 53 15;
   --danger: 248 113 113;
+  --danger-soft: 127 29 29;
   --info: 56 189 248;
+  --info-soft: 12 74 110;
+  --sidebar: 30 41 59;
+  --topbar: 30 41 59;
+  --shadow: 0 0 0;
+}
+
+/* ============================================================
+   THEME-AWARE UTILITY CLASSES
+   These read the CSS variables above so they automatically
+   switch with the theme without relying on Tailwind's `dark:`
+   variant (which requires a `.dark` class on <html>).
+   ============================================================ */
+@layer utilities {
+  .bg-app {
+    background-color: rgb(var(--background));
+  }
+  .bg-app-card {
+    background-color: rgb(var(--card));
+  }
+  .bg-app-sidebar {
+    background-color: rgb(var(--sidebar));
+  }
+  .bg-app-topbar {
+    background-color: rgb(var(--topbar));
+  }
+  .bg-app-muted {
+    background-color: rgb(var(--muted));
+  }
+  .bg-app-muted-surface {
+    background-color: rgb(var(--muted));
+  }
+  .text-app-heading {
+    color: rgb(var(--foreground));
+  }
+  .text-app-body {
+    color: rgb(var(--foreground));
+  }
+  .text-app-muted {
+    color: rgb(var(--muted-foreground));
+  }
+  .border-app-border {
+    border-color: rgb(var(--border));
+  }
+  .ring-app-ring {
+    --tw-ring-color: rgb(var(--ring));
+  }
+  .hover\:bg-app-muted:hover {
+    background-color: rgb(var(--muted));
+  }
 }
 
 html, body, #root {
@@ -60,32 +134,110 @@ html[dir='rtl'] {
 
 @layer components {
   .card {
-    @apply bg-white dark:bg-ink-900 border border-ink-100 dark:border-ink-800 rounded-2xl shadow-soft;
+    @apply rounded-2xl shadow-soft;
+    background-color: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
+  }
+  .dark .card {
+    background-color: rgb(var(--card));
   }
   .input {
-    @apply w-full rounded-xl border border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 px-3 py-2.5 text-sm text-ink-900 dark:text-ink-50 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition;
+    @apply w-full rounded-xl px-3 py-2.5 text-sm transition;
+    background-color: rgb(var(--card));
+    color: rgb(var(--foreground));
+    border: 1px solid rgb(var(--border));
+  }
+  .input::placeholder {
+    color: rgb(var(--muted-foreground));
+    opacity: 0.7;
+  }
+  .input:focus {
+    outline: none;
+    border-color: rgb(var(--ring));
+    box-shadow: 0 0 0 4px rgba(0, 115, 255, 0.15);
+  }
+  .dark .input {
+    background-color: rgb(var(--card));
+    color: rgb(var(--foreground));
   }
   .label {
-    @apply block text-xs font-medium text-ink-600 dark:text-ink-300 mb-1.5;
+    @apply block text-xs font-semibold mb-1.5;
+    color: rgb(var(--foreground));
+  }
+  .dark .label {
+    color: rgb(var(--foreground));
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed select-none;
   }
   .btn-primary {
-    @apply btn bg-brand-600 hover:bg-brand-700 text-white shadow-soft;
+    @apply btn text-white shadow-soft;
+    background-color: rgb(var(--primary));
+  }
+  .btn-primary:hover {
+    background-color: rgb(var(--primary-hover));
   }
   .btn-secondary {
-    @apply btn bg-ink-100 dark:bg-ink-800 hover:bg-ink-200 dark:hover:bg-ink-700 text-ink-700 dark:text-ink-100;
+    @apply btn;
+    background-color: rgb(var(--muted));
+    color: rgb(var(--foreground));
+  }
+  .btn-secondary:hover {
+    background-color: rgb(var(--border));
+  }
+  .dark .btn-secondary {
+    background-color: rgb(var(--muted));
+    color: rgb(var(--foreground));
   }
   .btn-danger {
-    @apply btn bg-red-600 hover:bg-red-700 text-white;
+    @apply btn text-white;
+    background-color: rgb(var(--danger));
+  }
+  .btn-danger:hover {
+    filter: brightness(0.92);
   }
   .btn-ghost {
-    @apply btn hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-100;
+    @apply btn;
+    color: rgb(var(--foreground));
+  }
+  .btn-ghost:hover {
+    background-color: rgb(var(--muted));
+  }
+  .dark .btn-ghost {
+    color: rgb(var(--foreground));
+  }
+  .dark .btn-ghost:hover {
+    background-color: rgb(var(--muted));
   }
   .chip {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
+  .chip-success {
+    @apply chip;
+    background-color: rgb(var(--success-soft));
+    color: rgb(var(--success));
+  }
+  .chip-warning {
+    @apply chip;
+    background-color: rgb(var(--warning-soft));
+    color: rgb(var(--warning));
+  }
+  .chip-danger {
+    @apply chip;
+    background-color: rgb(var(--danger-soft));
+    color: rgb(var(--danger));
+  }
+  .chip-info {
+    @apply chip;
+    background-color: rgb(var(--info-soft));
+    color: rgb(var(--info));
+  }
+  .chip-neutral {
+    @apply chip;
+    background-color: rgb(var(--muted));
+    color: rgb(var(--muted-foreground));
+  }
+
   .table-wrap {
     @apply overflow-x-auto;
   }
@@ -93,22 +245,49 @@ html[dir='rtl'] {
     @apply w-full text-sm;
   }
   .data-table thead th {
-    @apply text-start text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-300 bg-ink-50 dark:bg-ink-900/50 px-4 py-3;
+    @apply text-start text-xs font-semibold uppercase tracking-wide px-4 py-3;
+    color: rgb(var(--muted-foreground));
+    background-color: rgb(var(--muted));
+    border-bottom: 1px solid rgb(var(--border));
   }
   .data-table tbody td {
-    @apply px-4 py-3 text-ink-700 dark:text-ink-100 border-t border-ink-100 dark:border-ink-800;
+    @apply px-4 py-3;
+    color: rgb(var(--foreground));
+    border-top: 1px solid rgb(var(--border));
   }
   .data-table tbody tr:hover {
-    @apply bg-ink-50/60 dark:bg-ink-900/40;
+    background-color: rgba(241, 245, 249, 0.7);
+  }
+  .dark .data-table tbody tr:hover {
+    background-color: rgba(30, 41, 59, 0.4);
   }
   .sidebar-link {
-    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 dark:text-ink-300 hover:bg-ink-100 dark:hover:bg-ink-800 transition;
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition;
+    color: rgb(var(--foreground));
+  }
+  .sidebar-link:hover {
+    background-color: rgb(var(--muted));
+  }
+  .dark .sidebar-link {
+    color: rgb(var(--foreground));
+  }
+  .dark .sidebar-link:hover {
+    background-color: rgb(var(--muted));
   }
   .sidebar-link.active {
-    @apply bg-brand-600 text-white hover:bg-brand-700 shadow-soft;
+    background-color: rgb(var(--primary));
+    color: #ffffff;
+    box-shadow: 0 6px 24px -8px rgba(15, 23, 42, 0.10);
+  }
+  .sidebar-link.active:hover {
+    background-color: rgb(var(--primary-hover));
   }
   .skeleton {
-    @apply animate-pulse bg-ink-100 dark:bg-ink-800 rounded-md;
+    @apply animate-pulse rounded-md;
+    background-color: rgb(var(--muted));
+  }
+  .dark .skeleton {
+    background-color: rgb(var(--muted));
   }
 }
 
@@ -121,11 +300,11 @@ html[dir='rtl'] {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(120, 130, 150, 0.35);
+  background: rgba(100, 116, 139, 0.35);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 130, 150, 0.55);
+  background: rgba(100, 116, 139, 0.55);
 }
 
 /* Thinner scrollbar on small screens (mobile) */

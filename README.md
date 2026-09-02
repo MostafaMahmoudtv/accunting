@@ -184,14 +184,14 @@ PORT=5000
 MONGODB_URI=mongodb://127.0.0.1:27017/accounting-platform
 JWT_SECRET=replace_with_a_long_random_secret
 JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://https://accunting-client.vercel.app
 NODE_ENV=development
 ```
 
 #### `client/.env`
 
 ```env
-VITE_API_URL=https://web-production-fb0e0.up.railway.app/api
+VITE_API_URL=https://accunting-client.vercel.app/api
 ```
 
 > `.env.example` files are committed; real `.env` files are git-ignored.
@@ -208,8 +208,8 @@ npm run dev
 Or individually:
 
 ```bash
-npm run dev:server   # https://web-production-fb0e0.up.railway.app
-npm run dev:client   # http://localhost:5173
+npm run dev:server   # https://accunting-client.vercel.app
+npm run dev:client   # http://https://accunting-client.vercel.app
 ```
 
 ### Seed the Database

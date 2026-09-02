@@ -96,7 +96,7 @@ const Clients = () => {
       key: 'name',
       header: t('common.name'),
       render: (r) => (
-        <Link to={`/clients/${r._id}`} className="font-medium text-ink-900 dark:text-ink-50 hover:text-brand-600">
+        <Link to={`/clients/${r._id}`} className="font-medium text-app-heading hover:text-brand-600">
           {r.name}
         </Link>
       ),

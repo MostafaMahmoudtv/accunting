@@ -48,7 +48,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-ink-50 dark:bg-ink-900">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-app">
       <div className="hidden lg:flex relative bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white p-12 flex-col">
         <div className="flex items-center gap-2.5">
           <div className="h-10 w-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center font-bold">

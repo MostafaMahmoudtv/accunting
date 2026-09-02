@@ -27,7 +27,7 @@ const ConfirmDialog = ({ open, onClose, onConfirm, title, message, confirmText, 
         </>
       }
     >
-      <p className="text-sm text-ink-600 dark:text-ink-300">{message}</p>
+      <p className="text-sm text-app-muted">{message}</p>
     </Modal>
   );
 };

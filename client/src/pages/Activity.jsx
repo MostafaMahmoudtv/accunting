@@ -45,7 +45,7 @@ const Activity = () => {
         ) : items.length ? (
           <ul className="space-y-3">
             {items.map((a) => (
-              <li key={a._id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-ink-50 dark:hover:bg-ink-800">
+              <li key={a._id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-app-muted">
                 <div className="h-9 w-9 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold flex items-center justify-center shrink-0">
                   {initials(a.user?.name || 'U')}
                 </div>

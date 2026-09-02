@@ -46,6 +46,8 @@
     "submit": "إرسال",
     "upload": "رفع",
     "language": "اللغة",
+    "darkMode": "الوضع الليلي",
+    "lightMode": "الوضع الفاتح",
     "logout": "تسجيل الخروج",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
