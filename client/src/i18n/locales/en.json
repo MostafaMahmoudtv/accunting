@@ -73,7 +73,8 @@
     "paid": "Paid",
     "unpaid": "Unpaid",
     "overdue": "Overdue",
-    "partial": "Partially paid"
+    "partial": "Partially paid",
+    "password": "Password"
   },
   "auth": {
     "login": "Sign in",
@@ -89,7 +90,22 @@
     "invalidCredentials": "Invalid email or password",
     "noLoginAccess": "This account is registered in the system only and does not have sign-in access",
     "demoAccounts": "Demo accounts",
-    "useDemo": "Use demo"
+    "useDemo": "Use demo",
+    "secureLogin": "Secure sign-in",
+    "emailPlaceholder": "name@company.com",
+    "forgotPassword": "Forgot?",
+    "demoPasswordHint": "Default password: 123456",
+    "forgotTitle": "Forgot your password?",
+    "forgotSubtitle": "Enter your email and we'll send you a reset link",
+    "forgotSubmit": "Send reset link",
+    "forgotSuccess": "If that email is registered, you'll receive a reset link shortly",
+    "checkYourInbox": "Check your inbox",
+    "resetTitle": "Choose a new password",
+    "resetSubtitle": "Pick a strong password to secure your account",
+    "resetSubmit": "Update password",
+    "resetSuccess": "Password updated. You can now sign in.",
+    "resetInvalidToken": "This reset link is invalid or has expired",
+    "resetMissingToken": "No reset token found in the link",
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -258,6 +274,10 @@
     "subtitle": "Track business expenses and marketing spend",
     "add": "Add expense",
     "paidBy": "Paid by",
+    "paymentMethods": {
+      "cash": "Cash",
+      "bankTransfer": "Bank transfer"
+    },
     "categories": {
       "salary": "Salary",
       "marketing": "Marketing",
@@ -346,9 +366,12 @@
     "add": "Add user",
     "resetPassword": "Reset password",
     "newPassword": "New password",
+    "confirmPassword": "Confirm password",
     "currentPassword": "Current password",
     "changePassword": "Change password",
-    "passwordDisabled": "Password management has been removed. No password to change."
+    "passwordPlaceholderAdd": "Password (minimum 6 characters)",
+    "passwordPlaceholderEdit": "Leave blank to keep the current password",
+    "passwordTooShort": "Password must be at least 6 characters"
   },
   "settings": {
     "title": "Settings",
@@ -362,6 +385,7 @@
     "required": "This field is required",
     "invalidEmail": "Please enter a valid email",
     "minLength": "Must be at least {{count}} characters",
+    "passwordsDoNotMatch": "Passwords do not match",
     "network": "Network error — please try again",
     "forbidden": "You don't have permission to perform this action",
     "notFound": "Not found"

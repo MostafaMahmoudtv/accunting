@@ -31,7 +31,10 @@ const ExpenseForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
           ))}
         </FormSelect>
         <FormInput label={t('common.date')} type="date" {...register('date')} />
-        <FormInput label={t('expenses.paidBy')} {...register('paidBy')} />
+        <FormSelect label={t('expenses.paidBy')} {...register('paidBy')}>
+          <option value="cash">{t('expenses.paymentMethods.cash')}</option>
+          <option value="bank_transfer">{t('expenses.paymentMethods.bankTransfer')}</option>
+        </FormSelect>
         <FormTextarea label={t('common.description')} className="md:col-span-2" {...register('description')} />
         <FormTextarea label={t('common.notes')} className="md:col-span-2" {...register('notes')} />
       </div>

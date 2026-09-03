@@ -10,14 +10,25 @@ import { startOfMonth, endOfMonth } from '../utils/dates.js';
 
 const isOverdue = (d) => d && new Date(d) < new Date() && !(d?.completedAt);
 
+const isManagerOrAdmin = (role) => [ROLES.SUPER_ADMIN, ROLES.MANAGER].includes(role);
+const canSeeFinancials = (role) =>
+  [ROLES.SUPER_ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT].includes(role);
+
 export const dashboardStats = asyncHandler(async (req, res) => {
   const now = new Date();
   const monthStart = startOfMonth(now);
   const monthEnd = endOfMonth(now);
+  const role = req.user.role;
+  const restricted = !isManagerOrAdmin(role);
+  const noFinancials = !canSeeFinancials(role);
 
-  // Update overdue tasks
+  // Task visibility — customer service / accountants only see their own tasks.
+  const taskFilter = restricted ? { assignedTo: req.user._id } : {};
+
+  // Update overdue tasks (only the ones visible to this user if restricted)
   await Task.updateMany(
     {
+      ...taskFilter,
       status: { $nin: ['completed', 'cancelled'] },
       dueDate: { $lt: now },
     },
@@ -45,33 +56,40 @@ export const dashboardStats = asyncHandler(async (req, res) => {
     taskStatusAgg,
     teamWorkload,
   ] = await Promise.all([
-    Client.countDocuments(),
-    Client.countDocuments({ clientType: 'monthly' }),
-    Client.countDocuments({ clientType: 'temporary' }),
-    Client.countDocuments({ clientType: 'one_time' }),
-    Task.countDocuments({ status: { $nin: ['completed', 'cancelled'] } }),
-    Task.countDocuments({ status: 'completed' }),
-    Task.countDocuments({ status: 'overdue' }),
-    Task.countDocuments({ status: { $in: ['new', 'pending', 'in_progress'] } }),
+    restricted ? Promise.resolve(0) : Client.countDocuments(),
+    restricted ? Promise.resolve(0) : Client.countDocuments({ clientType: 'monthly' }),
+    restricted ? Promise.resolve(0) : Client.countDocuments({ clientType: 'temporary' }),
+    restricted ? Promise.resolve(0) : Client.countDocuments({ clientType: 'one_time' }),
+    Task.countDocuments({ ...taskFilter, status: { $nin: ['completed', 'cancelled'] } }),
+    Task.countDocuments({ ...taskFilter, status: 'completed' }),
+    Task.countDocuments({ ...taskFilter, status: 'overdue' }),
+    Task.countDocuments({ ...taskFilter, status: { $in: ['new', 'pending', 'in_progress'] } }),
     Task.countDocuments({
+      ...taskFilter,
       status: { $nin: ['completed', 'cancelled'] },
       dueDate: { $gte: monthStart, $lte: monthEnd },
     }),
-    Payment.aggregate([{ $match: { status: { $in: ['unpaid', 'partially_paid'] } } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
-    Payment.aggregate([{ $match: { status: 'overdue' } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
-    getMonthlyRevenue(now),
-    getMonthlyExpenses(now),
-    getNetProfit(now),
-    getMonthlySeries(12),
-    getExpenseBreakdown(monthStart, monthEnd),
-    Client.aggregate([{ $group: { _id: '$clientType', count: { $sum: 1 } } }]),
-    Task.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-    Task.aggregate([
-      { $match: { status: { $nin: ['completed', 'cancelled'] } } },
-      { $group: { _id: '$assignedTo', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 10 },
-    ]),
+    noFinancials
+      ? Promise.resolve([])
+      : Payment.aggregate([{ $match: { status: { $in: ['unpaid', 'partially_paid'] } } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
+    noFinancials
+      ? Promise.resolve([])
+      : Payment.aggregate([{ $match: { status: 'overdue' } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
+    noFinancials ? Promise.resolve(0) : getMonthlyRevenue(now),
+    noFinancials ? Promise.resolve(0) : getMonthlyExpenses(now),
+    noFinancials ? Promise.resolve(0) : getNetProfit(now),
+    noFinancials ? Promise.resolve([]) : getMonthlySeries(12),
+    noFinancials ? Promise.resolve([]) : getExpenseBreakdown(monthStart, monthEnd),
+    restricted ? Promise.resolve([]) : Client.aggregate([{ $group: { _id: '$clientType', count: { $sum: 1 } } }]),
+    Task.aggregate([{ $match: taskFilter }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+    restricted
+      ? Promise.resolve([])
+      : Task.aggregate([
+          { $match: { status: { $nin: ['completed', 'cancelled'] } } },
+          { $group: { _id: '$assignedTo', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ]),
   ]);
 
   // populate team workload names
@@ -83,14 +101,16 @@ export const dashboardStats = asyncHandler(async (req, res) => {
     count: w.count,
   }));
 
-  // Hide revenue/expenses from data entry & customer service
-  const canSeeFinancials = [ROLES.SUPER_ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT].includes(req.user.role);
   const clientTypes = { monthly: 0, temporary: 0, one_time: 0 };
   for (const c of clientTypeAgg) clientTypes[c._id] = c.count;
   const taskStatus = {};
   for (const t of taskStatusAgg) taskStatus[t._id] = t.count;
 
   const stats = {
+    roleScope: {
+      restricted,
+      noFinancials,
+    },
     totals: {
       totalClients,
       monthlyClients,
@@ -104,9 +124,9 @@ export const dashboardStats = asyncHandler(async (req, res) => {
       pendingPayments: pendingPaymentsAgg[0]?.total || 0,
       overduePayments: overduePaymentsAgg[0]?.total || 0,
     },
-    financials: canSeeFinancials
-      ? { monthlyRevenue, monthlyExpenses, netProfit }
-      : { monthlyRevenue: 0, monthlyExpenses: 0, netProfit: 0 },
+    financials: noFinancials
+      ? { monthlyRevenue: 0, monthlyExpenses: 0, netProfit: 0 }
+      : { monthlyRevenue, monthlyExpenses, netProfit },
     charts: {
       monthlySeries,
       expenseBreakdown,
@@ -120,7 +140,12 @@ export const dashboardStats = asyncHandler(async (req, res) => {
 
 export const recentActivity = asyncHandler(async (req, res) => {
   const ActivityLog = (await import('../models/ActivityLog.js')).ActivityLog;
-  const items = await ActivityLog.find()
+  const restricted = !isManagerOrAdmin(req.user.role);
+  // Restricted users only see activity entries they themselves produced —
+  // this keeps the activity feed useful for them (their own task updates,
+  // comments, etc.) while not leaking other users' actions.
+  const filter = restricted ? { user: req.user._id } : {};
+  const items = await ActivityLog.find(filter)
     .populate('user', 'name email role')
     .sort({ createdAt: -1 })
     .limit(15);
@@ -131,19 +156,24 @@ export const alerts = asyncHandler(async (req, res) => {
   const now = new Date();
   const soon = new Date();
   soon.setDate(soon.getDate() + 3);
+  const restricted = !isManagerOrAdmin(req.user.role);
+  const noFinancials = !canSeeFinancials(req.user.role);
+  const taskFilter = restricted ? { assignedTo: req.user._id } : {};
+
   const [overdueTasks, dueSoonTasks, overduePayments] = await Promise.all([
-    Task.find({ status: { $nin: ['completed', 'cancelled'] }, dueDate: { $lt: now } })
+    Task.find({ ...taskFilter, status: { $nin: ['completed', 'cancelled'] }, dueDate: { $lt: now } })
       .populate('assignedTo', 'name')
       .populate('client', 'name')
       .limit(20),
     Task.find({
+      ...taskFilter,
       status: { $nin: ['completed', 'cancelled'] },
       dueDate: { $gte: now, $lte: soon },
     })
       .populate('assignedTo', 'name')
       .populate('client', 'name')
       .limit(20),
-    Payment.find({ status: 'overdue' }).populate('client', 'name').limit(20),
+    noFinancials ? Promise.resolve([]) : Payment.find({ status: 'overdue' }).populate('client', 'name').limit(20),
   ]);
   return success(res, { overdueTasks, dueSoonTasks, overduePayments });
 });

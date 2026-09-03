@@ -44,7 +44,9 @@ const PIE_COLORS = ['#0073ff', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
-  const { canSeeFinancials } = useAuth();
+  const { canSeeFinancials, user } = useAuth();
+  const isManager = user && ['super_admin', 'manager'].includes(user.role);
+  const isAccountant = user?.role === 'accountant';
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-stats'],
@@ -70,6 +72,15 @@ const Dashboard = () => {
   const teamWorkload = charts.teamWorkload || [];
   const expenseBreakdown = charts.expenseBreakdown || [];
 
+  // Customer service / accountant only see their own tasks, so the client
+  // totals, payments, revenue/expenses, expense breakdown, and team workload
+  // are either hidden (would always be 0) or — in the accountant's case —
+  // available because they have financial visibility.
+  const hideClientStats = !isManager;
+  const hideExpenseBreakdown = !canSeeFinancials;
+  const hideRevenueChart = !canSeeFinancials;
+  const hideTeamWorkload = !isManager;
+
   const clientTypeData = [
     { name: t('clients.monthly'), value: clientTypes.monthly || 0, key: 'monthly' },
     { name: t('clients.temporary'), value: clientTypes.temporary || 0, key: 'temporary' },
@@ -93,30 +104,34 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard
-          label={t('dashboard.totalClients')}
-          value={isLoading ? '…' : totals.totalClients}
-          icon={Users}
-          accent="brand"
-        />
-        <StatCard
-          label={t('dashboard.monthlyClients')}
-          value={isLoading ? '…' : totals.monthlyClients}
-          icon={UserCheck}
-          accent="emerald"
-        />
-        <StatCard
-          label={t('dashboard.temporaryClients')}
-          value={isLoading ? '…' : totals.temporaryClients}
-          icon={UserPlus}
-          accent="amber"
-        />
-        <StatCard
-          label={t('dashboard.oneTimeClients')}
-          value={isLoading ? '…' : totals.oneTimeClients}
-          icon={Briefcase}
-          accent="sky"
-        />
+        {!hideClientStats && (
+          <>
+            <StatCard
+              label={t('dashboard.totalClients')}
+              value={isLoading ? '…' : totals.totalClients}
+              icon={Users}
+              accent="brand"
+            />
+            <StatCard
+              label={t('dashboard.monthlyClients')}
+              value={isLoading ? '…' : totals.monthlyClients}
+              icon={UserCheck}
+              accent="emerald"
+            />
+            <StatCard
+              label={t('dashboard.temporaryClients')}
+              value={isLoading ? '…' : totals.temporaryClients}
+              icon={UserPlus}
+              accent="amber"
+            />
+            <StatCard
+              label={t('dashboard.oneTimeClients')}
+              value={isLoading ? '…' : totals.oneTimeClients}
+              icon={Briefcase}
+              accent="sky"
+            />
+          </>
+        )}
         <StatCard
           label={t('dashboard.activeTasks')}
           value={isLoading ? '…' : totals.activeTasks}
@@ -141,20 +156,20 @@ const Dashboard = () => {
           icon={Clock}
           accent="amber"
         />
-        <StatCard
-          label={t('dashboard.pendingPayments')}
-          value={isLoading ? '…' : fmtMoney(totals.pendingPayments, 'SAR', i18n.language)}
-          icon={Wallet}
-          accent="amber"
-        />
-        <StatCard
-          label={t('dashboard.overduePayments')}
-          value={isLoading ? '…' : fmtMoney(totals.overduePayments, 'SAR', i18n.language)}
-          icon={AlertTriangle}
-          accent="rose"
-        />
         {canSeeFinancials && (
           <>
+            <StatCard
+              label={t('dashboard.pendingPayments')}
+              value={isLoading ? '…' : fmtMoney(totals.pendingPayments, 'SAR', i18n.language)}
+              icon={Wallet}
+              accent="amber"
+            />
+            <StatCard
+              label={t('dashboard.overduePayments')}
+              value={isLoading ? '…' : fmtMoney(totals.overduePayments, 'SAR', i18n.language)}
+              icon={AlertTriangle}
+              accent="rose"
+            />
             <StatCard
               label={t('dashboard.monthlyRevenue')}
               value={fmtMoney(financials.monthlyRevenue, 'SAR', i18n.language)}
@@ -177,58 +192,63 @@ const Dashboard = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-        <div className="card p-4 sm:p-5 xl:col-span-2">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h3 className="text-sm font-semibold">{t('dashboard.revenueVsExpenses')}</h3>
+      {/* Financial charts — visible only to roles that can see financials */}
+      {canSeeFinancials && (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+          <div className="card p-4 sm:p-5 xl:col-span-2">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 className="text-sm font-semibold">{t('dashboard.revenueVsExpenses')}</h3>
+            </div>
+            <div className="h-60 sm:h-72">
+              <ResponsiveContainer>
+                <AreaChart data={monthlySeries}>
+                  <defs>
+                    <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="#22c55e" stopOpacity={0.4} />
+                      <stop offset="1" stopColor="#22c55e" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="exp" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="#ef4444" stopOpacity={0.4} />
+                      <stop offset="1" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,130,150,0.2)" />
+                  <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} width={40} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)' }}
+                    formatter={(v) => fmtMoney(v, 'SAR', i18n.language)}
+                  />
+                  <Area type="monotone" dataKey="revenue" stroke="#22c55e" fill="url(#rev)" name={t('reports.revenue')} />
+                  <Area type="monotone" dataKey="expenses" stroke="#ef4444" fill="url(#exp)" name={t('reports.expenses')} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="h-60 sm:h-72">
-            <ResponsiveContainer>
-              <AreaChart data={monthlySeries}>
-                <defs>
-                  <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#22c55e" stopOpacity={0.4} />
-                    <stop offset="1" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="exp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stopColor="#ef4444" stopOpacity={0.4} />
-                    <stop offset="1" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,130,150,0.2)" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} width={40} />
-                <Tooltip
-                  contentStyle={{ borderRadius: 12, border: '1px solid rgba(0,0,0,0.1)' }}
-                  formatter={(v) => fmtMoney(v, 'SAR', i18n.language)}
-                />
-                <Area type="monotone" dataKey="revenue" stroke="#22c55e" fill="url(#rev)" name={t('reports.revenue')} />
-                <Area type="monotone" dataKey="expenses" stroke="#ef4444" fill="url(#exp)" name={t('reports.expenses')} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
 
-        <div className="card p-4 sm:p-5">
-          <h3 className="text-sm font-semibold mb-3 sm:mb-4">{t('dashboard.clientTypes')}</h3>
-          <div className="h-60 sm:h-72">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie data={clientTypeData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={3}>
-                  {clientTypeData.map((entry, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          {!hideClientStats && (
+            <div className="card p-4 sm:p-5">
+              <h3 className="text-sm font-semibold mb-3 sm:mb-4">{t('dashboard.clientTypes')}</h3>
+              <div className="h-60 sm:h-72">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie data={clientTypeData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={80} paddingAngle={3}>
+                      {clientTypeData.map((entry, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-        <div className="card p-4 sm:p-5 xl:col-span-2">
+        <div className={`card p-4 sm:p-5 ${hideTeamWorkload ? 'xl:col-span-3' : 'xl:col-span-2'}`}>
           <h3 className="text-sm font-semibold mb-3 sm:mb-4">{t('dashboard.taskStatus')}</h3>
           <div className="h-64 sm:h-72">
             <ResponsiveContainer>
@@ -247,24 +267,26 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card p-4 sm:p-5">
-          <h3 className="text-sm font-semibold mb-3 sm:mb-4">{t('dashboard.teamWorkload')}</h3>
-          <div className="h-64 sm:h-72">
-            {teamWorkload.length ? (
-              <ResponsiveContainer>
-                <BarChart data={teamWorkload.map((w) => ({ name: w.user?.name || '—', count: w.count }))} layout="vertical" margin={{ left: 10, right: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,130,150,0.2)" />
-                  <XAxis type="number" tick={{ fontSize: 11 }} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={80} />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#3266ff" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyState message={t('common.noData')} />
-            )}
+        {!hideTeamWorkload && (
+          <div className="card p-4 sm:p-5">
+            <h3 className="text-sm font-semibold mb-3 sm:mb-4">{t('dashboard.teamWorkload')}</h3>
+            <div className="h-64 sm:h-72">
+              {teamWorkload.length ? (
+                <ResponsiveContainer>
+                  <BarChart data={teamWorkload.map((w) => ({ name: w.user?.name || '—', count: w.count }))} layout="vertical" margin={{ left: 10, right: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(120,130,150,0.2)" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={80} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#3266ff" radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message={t('common.noData')} />
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
@@ -318,17 +340,19 @@ const Dashboard = () => {
                 </div>
               )}
             />
-            <AlertSection
-              title={t('dashboard.overduePaymentsList')}
-              items={alerts?.overduePayments}
-              empty="—"
-              renderItem={(p) => (
-                <div className="flex items-center justify-between gap-2 text-sm py-1.5">
-                  <span className="truncate min-w-0">{p.client?.name || '—'}</span>
-                  <span className="text-xs text-rose-600 font-medium shrink-0">{fmtMoney(p.amount, 'SAR', i18n.language)}</span>
-                </div>
-              )}
-            />
+            {canSeeFinancials && (
+              <AlertSection
+                title={t('dashboard.overduePaymentsList')}
+                items={alerts?.overduePayments}
+                empty="—"
+                renderItem={(p) => (
+                  <div className="flex items-center justify-between gap-2 text-sm py-1.5">
+                    <span className="truncate min-w-0">{p.client?.name || '—'}</span>
+                    <span className="text-xs text-rose-600 font-medium shrink-0">{fmtMoney(p.amount, 'SAR', i18n.language)}</span>
+                  </div>
+                )}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -28,8 +28,8 @@ const schema = (t) =>
 const TaskForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
   const { t } = useTranslation();
   const { data: clients } = useQuery({
-    queryKey: ['clients-options'],
-    queryFn: async () => (await api.get('/clients?limit=200')).data.data,
+    queryKey: ['my-clients-options'],
+    queryFn: async () => (await api.get('/tasks/my-clients')).data.data,
   });
   const { data: users } = useQuery({
     queryKey: ['users-list'],

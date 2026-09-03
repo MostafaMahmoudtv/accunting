@@ -73,7 +73,8 @@
     "paid": "مدفوع",
     "unpaid": "غير مدفوع",
     "overdue": "متأخر",
-    "partial": "مدفوع جزئياً"
+    "partial": "مدفوع جزئياً",
+    "password": "كلمة المرور"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -89,7 +90,22 @@
     "invalidCredentials": "البريد أو كلمة المرور غير صحيحة",
     "noLoginAccess": "هذا الحساب مسجّل في النظام فقط ولا يملك صلاحية الدخول",
     "demoAccounts": "حسابات تجريبية",
-    "useDemo": "استخدم هذا"
+    "useDemo": "استخدم هذا",
+    "secureLogin": "دخول آمن",
+    "emailPlaceholder": "name@company.com",
+    "forgotPassword": "نسيت؟",
+    "demoPasswordHint": "كلمة المرور الافتراضية: 123456",
+    "forgotTitle": "نسيت كلمة المرور؟",
+    "forgotSubtitle": "أدخل بريدك وسنرسل لك رابطاً لإعادة التعيين",
+    "forgotSubmit": "إرسال رابط إعادة التعيين",
+    "forgotSuccess": "إذا كان البريد مسجلاً لدينا، ستصلك رسالة خلال لحظات",
+    "checkYourInbox": "تحقق من بريدك",
+    "resetTitle": "تعيين كلمة مرور جديدة",
+    "resetSubtitle": "اختر كلمة مرور جديدة لحسابك",
+    "resetSubmit": "تحديث كلمة المرور",
+    "resetSuccess": "تم تحديث كلمة المرور بنجاح، يمكنك تسجيل الدخول الآن",
+    "resetInvalidToken": "هذا الرابط غير صالح أو انتهت صلاحيته",
+    "resetMissingToken": "لم يتم العثور على رمز إعادة التعيين في الرابط"
   },
   "nav": {
     "dashboard": "لوحة التحكم",
@@ -258,6 +274,10 @@
     "subtitle": "تتبع المصروفات والتسويق",
     "add": "إضافة مصروف",
     "paidBy": "دفع بواسطة",
+    "paymentMethods": {
+      "cash": "نقدي",
+      "bankTransfer": "تحويل بنكي"
+    },
     "categories": {
       "salary": "رواتب",
       "marketing": "تسويق",
@@ -346,9 +366,12 @@
     "add": "إضافة مستخدم",
     "resetPassword": "إعادة تعيين كلمة المرور",
     "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "changePassword": "تغيير كلمة المرور",
-    "passwordDisabled": "تم إلغاء نظام كلمات المرور. لا حاجة لتغييرها."
+    "passwordPlaceholderAdd": "كلمة المرور (6 أحرف على الأقل)",
+    "passwordPlaceholderEdit": "اتركها فارغة للإبقاء على كلمة المرور الحالية",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل"
   },
   "settings": {
     "title": "الإعدادات",
@@ -361,7 +384,8 @@
   "errors": {
     "required": "هذا الحقل مطلوب",
     "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
-    "minLength": "يجب أن يكون至少 {{count}} أحرف",
+    "minLength": "يجب أن يكون {{count}} أحرف على الأقل",
+    "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
     "network": "خطأ في الشبكة — حاول مجدداً",
     "forbidden": "ليس لديك صلاحية للقيام بهذا الإجراء",
     "notFound": "غير موجود"

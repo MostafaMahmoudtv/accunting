@@ -59,11 +59,22 @@ const Sidebar = ({ open, onClose }) => {
   }, []);
 
   const items = baseItems.filter(({ key }) => {
+    // Admin-only sections — customer service / accountants are redirected to dashboard.
+    if (key === "users") return hasRole("super_admin", "manager");
+    if (key === "employees") return hasRole("super_admin", "manager");
     if (key === "salaries") return hasRole("super_admin", "manager");
+    if (key === "workflows") return hasRole("super_admin", "manager");
+    if (key === "clients") return hasRole("super_admin", "manager");
+    // Financial screens — customer service has none of these. Accountants can
+    // see revenue/expenses/payments but not reports or activity.
     if (key === "revenue")
       return hasRole("super_admin", "manager", "accountant");
-    if (key === "users") return hasRole("super_admin", "manager");
-    if (key === "reports") return true;
+    if (key === "expenses")
+      return hasRole("super_admin", "manager", "accountant");
+    if (key === "payments")
+      return hasRole("super_admin", "manager", "accountant");
+    if (key === "reports") return hasRole("super_admin", "manager");
+    if (key === "activity") return hasRole("super_admin", "manager");
     return true;
   });
 

@@ -5,6 +5,7 @@ import { success, created, fail } from '../utils/apiResponse.js';
 import { buildPagination, buildMeta } from '../utils/pagination.js';
 import { logActivity } from '../services/activityService.js';
 import { ROLES } from '../config/constants.js';
+import { syncSalaryExpense } from './expenseController.js';
 
 export const listSalaries = asyncHandler(async (req, res) => {
   const { page, limit, skip } = buildPagination(req.query);
@@ -27,6 +28,7 @@ export const listSalaries = asyncHandler(async (req, res) => {
 
 export const createSalary = asyncHandler(async (req, res) => {
   const salary = await Salary.create({ ...req.body, createdBy: req.user._id });
+  await syncSalaryExpense(salary, { userId: req.user._id });
   await logActivity({
     user: req.user._id,
     action: 'salary.create',
@@ -43,6 +45,7 @@ export const updateSalary = asyncHandler(async (req, res) => {
     runValidators: true,
   });
   if (!salary) return fail(res, 404, 'Salary not found.');
+  await syncSalaryExpense(salary, { userId: req.user._id });
   await logActivity({
     user: req.user._id,
     action: 'salary.update',
@@ -56,6 +59,9 @@ export const updateSalary = asyncHandler(async (req, res) => {
 export const deleteSalary = asyncHandler(async (req, res) => {
   const salary = await Salary.findByIdAndDelete(req.params.id);
   if (!salary) return fail(res, 404, 'Salary not found.');
+  // Clean up any expense that was auto-generated from this salary.
+  const { Expense } = await import('../models/Expense.js');
+  await Expense.deleteOne({ sourceSalary: salary._id });
   await logActivity({
     user: req.user._id,
     action: 'salary.delete',

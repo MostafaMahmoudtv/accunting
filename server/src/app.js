@@ -38,12 +38,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.set('trust proxy', 1);
 app.use(helmet());
 
-// Allow multiple origins in production (comma-separated) and the dev port.
-// In dev, falls back to the local Vite port; in production, reads CLIENT_URL from the platform.
-const defaultClientOrigins = isProduction
-  ? 'https://accunting-client.vercel.app'
-  : 'http://localhost:5173,http://127.0.0.1:5173';
-const allowedOrigins = (process.env.CLIENT_URL || defaultClientOrigins)
+// Allow multiple origins in production (comma-separated) and the dev port
+const allowedOrigins = (process.env.CLIENT_URL || 'http://https://accunting-client.vercel.app')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);

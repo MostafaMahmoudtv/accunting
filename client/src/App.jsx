@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import ClientProfile from './pages/ClientProfile';
@@ -74,6 +75,7 @@ const App = () => {
     <ErrorBoundary>
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           element={
             <ProtectedRoute>
@@ -82,12 +84,40 @@ const App = () => {
           }
         >
           <Route path="/" element={<Dashboard />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/clients/:id" element={<ClientProfile />} />
+          <Route
+            path="/clients"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Clients />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clients/:id"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <ClientProfile />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks/:id" element={<TaskDetail />} />
-          <Route path="/workflows" element={<Workflows />} />
-          <Route path="/payments" element={<Payments />} />
+          <Route
+            path="/workflows"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Workflows />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payments"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
+                <Payments />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/revenue"
             element={
@@ -96,7 +126,14 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/expenses" element={<Expenses />} />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
+                <Expenses />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/salaries"
             element={
@@ -105,7 +142,14 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/employees" element={<Employees />} />
+          <Route
+            path="/employees"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Employees />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/users"
             element={
@@ -114,9 +158,30 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/activity" element={<Activity />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Reports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/activity"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Activity />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute roles={['super_admin', 'manager']}>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

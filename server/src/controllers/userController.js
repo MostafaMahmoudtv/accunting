@@ -32,10 +32,12 @@ export const createUser = asyncHandler(async (req, res) => {
   const exists = await User.findOne({ email });
   if (exists) return fail(res, 409, 'Email already in use.');
 
-  // Password is no longer required. Accountants (no login access) may be created
-  // without one. Only super_admin / manager need a password to sign in.
-  const payload = { name, email, role, phone, department };
-  if (password) payload.password = password;
+  // Password is required so the user can sign in. Minimum 6 chars (matches schema).
+  if (!password || password.length < 6) {
+    return fail(res, 400, 'Password is required (minimum 6 characters).');
+  }
+
+  const payload = { name, email, password, role, phone, department };
   const user = await User.create(payload);
   await logActivity({
     user: req.user._id,
@@ -50,13 +52,34 @@ export const createUser = asyncHandler(async (req, res) => {
 export const updateUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const updates = { ...req.body };
-  delete updates.password; // password is no longer managed here
+
+  // Only apply password update if a non-empty value was sent (lets the form
+  // submit without changing the password by leaving the field blank).
+  if (updates.password !== undefined) {
+    if (updates.password && updates.password.length < 6) {
+      return fail(res, 400, 'Password must be at least 6 characters.');
+    }
+    if (!updates.password) {
+      delete updates.password;
+    }
+  }
   if (updates.role && !ROLE_LIST.includes(updates.role)) return fail(res, 400, 'Invalid role.');
   if (updates.department && !DEPARTMENTS.includes(updates.department)) {
     return fail(res, 400, 'Invalid department.');
   }
-  const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+
+  // Use findById + save so the pre('save') password hook fires (findByIdAndUpdate
+  // bypasses save middleware, which would store the password unhashed).
+  const user = await User.findById(id);
   if (!user) return fail(res, 404, 'User not found.');
+
+  const assignable = ['name', 'email', 'phone', 'role', 'department', 'isActive'];
+  for (const key of assignable) {
+    if (updates[key] !== undefined) user[key] = updates[key];
+  }
+  if (updates.password) user.password = updates.password;
+  await user.save();
+
   await logActivity({
     user: req.user._id,
     action: 'user.update',

@@ -4,6 +4,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { success, created, fail } from '../utils/apiResponse.js';
 import { buildPagination, buildMeta } from '../utils/pagination.js';
 import { logActivity } from '../services/activityService.js';
+import { syncPaymentRevenue } from './revenueController.js';
 
 const refreshClientStatus = async (clientId) => {
   if (!clientId) return;
@@ -48,6 +49,7 @@ export const createPayment = asyncHandler(async (req, res) => {
     description: `Created payment of ${payment.amount}`,
   });
   await refreshClientStatus(payment.client);
+  await syncPaymentRevenue(payment, { userId: req.user._id });
   return created(res, payment);
 });
 
@@ -65,6 +67,7 @@ export const updatePayment = asyncHandler(async (req, res) => {
     description: `Updated payment`,
   });
   await refreshClientStatus(payment.client);
+  await syncPaymentRevenue(payment, { userId: req.user._id });
   return success(res, payment);
 });
 
@@ -79,6 +82,9 @@ export const deletePayment = asyncHandler(async (req, res) => {
     description: `Deleted payment`,
   });
   await refreshClientStatus(payment.client);
+  // Clean up any revenue that was auto-generated from this payment.
+  const { Revenue } = await import('../models/Revenue.js');
+  await Revenue.deleteOne({ sourcePayment: payment._id });
   return success(res, { ok: true });
 });
 

@@ -11,9 +11,12 @@ const expenseSchema = new mongoose.Schema(
     paidBy: { type: String, trim: true },
     receipt: { url: String, name: String },
     notes: { type: String },
+    sourceSalary: { type: mongoose.Schema.Types.ObjectId, ref: 'Salary' },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true }
 );
+
+expenseSchema.index({ sourceSalary: 1 }, { unique: true, sparse: true });
 
 export const Expense = mongoose.model('Expense', expenseSchema);

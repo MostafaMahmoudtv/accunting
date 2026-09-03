@@ -7,6 +7,7 @@ const router = Router();
 router.use(protect);
 
 router.get('/kanban', taskController.kanbanTasks);
+router.get('/my-clients', taskController.myClients);
 router.get('/', taskController.listTasks);
 router.get('/:id', taskController.getTask);
 router.post(

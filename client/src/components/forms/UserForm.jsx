@@ -7,21 +7,30 @@ import { ROLES, DEPARTMENTS } from '../../utils/constants';
 
 const UserForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
   const { t } = useTranslation();
-  const { register, handleSubmit, reset } = useForm({
+  const isEdit = Boolean(defaultValues);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: defaultValues || { role: 'customer_service', isActive: true },
   });
 
   useEffect(() => {
     if (defaultValues) {
-      reset(defaultValues);
+      reset({
+        ...defaultValues,
+        password: '', // never pre-fill; let admin type a new one if they want to change it
+      });
     }
   }, [defaultValues, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <FormInput label={t('common.name')} {...register('name', { required: true })} />
-        <FormInput label={t('common.email')} type="email" {...register('email', { required: true })} />
+        <FormInput label={t('common.name')} {...register('name', { required: true })} error={errors.name?.message} />
+        <FormInput label={t('common.email')} type="email" {...register('email', { required: true })} error={errors.email?.message} />
         <FormInput label={t('common.phone')} {...register('phone')} />
         <FormSelect label={t('employees.role')} {...register('role')}>
           {ROLES.map((r) => (
@@ -34,6 +43,18 @@ const UserForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
             <option key={d} value={d}>{t(`employees.departments.${d}`)}</option>
           ))}
         </FormSelect>
+        <FormInput
+          label={t('common.password')}
+          type="password"
+          autoComplete="new-password"
+          placeholder={isEdit ? t('users.passwordPlaceholderEdit') : t('users.passwordPlaceholderAdd')}
+          {...register('password', {
+            required: !isEdit,
+            minLength: { value: 6, message: t('users.passwordTooShort') },
+            validate: (v) => !v || v.length >= 6 || t('users.passwordTooShort'),
+          })}
+          error={errors.password?.message}
+        />
       </div>
       <FormFooter onCancel={onCancel} loading={loading} />
     </form>

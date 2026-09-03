@@ -1,8 +1,47 @@
 import { Revenue } from '../models/Revenue.js';
+import { Client } from '../models/Client.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { success, created, fail } from '../utils/apiResponse.js';
 import { buildPagination, buildMeta } from '../utils/pagination.js';
 import { logActivity } from '../services/activityService.js';
+
+/**
+ * Keep the Revenue collection in sync with Payment records.
+ *
+ * Every payment (regardless of its status) is mirrored as a Revenue record so
+ * the two stay in sync: anything you can see in Payments is also reflected in
+ * Revenue. Edits to the payment amount/status/date propagate to the linked
+ * revenue; deleting a payment removes the revenue.
+ *
+ * Idempotent: re-running with the same payment is a no-op (or an update).
+ */
+export const syncPaymentRevenue = async (payment, { userId } = {}) => {
+  if (!payment) return;
+  let clientName = '';
+  if (payment.client) {
+    const c = await Client.findById(payment.client).select('name companyName');
+    clientName = c?.companyName || c?.name || '';
+  }
+  const title = clientName
+    ? `Payment from ${clientName}`
+    : `Payment ${payment.invoice || payment._id.toString().slice(-6)}`;
+
+  const update = {
+    client: payment.client,
+    amount: payment.amount,
+    category: 'other',
+    date: payment.paymentDate || new Date(),
+    description: payment.notes,
+    paymentStatus: payment.status,
+    title,
+  };
+
+  await Revenue.findOneAndUpdate(
+    { sourcePayment: payment._id },
+    { $set: update, $setOnInsert: { sourcePayment: payment._id, createdBy: userId || payment.createdBy } },
+    { upsert: true, new: true, setDefaultsOnInsert: true },
+  );
+};
 
 export const listRevenue = asyncHandler(async (req, res) => {
   const { page, limit, skip } = buildPagination(req.query);

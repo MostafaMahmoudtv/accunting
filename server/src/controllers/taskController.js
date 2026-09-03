@@ -182,3 +182,20 @@ export const kanbanTasks = asyncHandler(async (req, res) => {
     .sort({ priority: -1, dueDate: 1 });
   return success(res, tasks);
 });
+
+// Lightweight client list for select-boxes in task / payment forms. Customer
+// service and accountants only see clients that are actually tied to one of
+// their tasks — managers and admins see everyone.
+export const myClients = asyncHandler(async (req, res) => {
+  const isManager = [ROLES.SUPER_ADMIN, ROLES.MANAGER].includes(req.user.role);
+  if (isManager) {
+    const clients = await Client.find().select('name companyName clientType').sort({ name: 1 }).limit(200);
+    return success(res, clients);
+  }
+  // Distinct client ids from this user's tasks.
+  const taskClients = await Task.distinct('client', { assignedTo: req.user._id, client: { $ne: null } });
+  const clients = await Client.find({ _id: { $in: taskClients } })
+    .select('name companyName clientType')
+    .sort({ name: 1 });
+  return success(res, clients);
+});
