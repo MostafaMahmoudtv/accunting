@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   );
 
   const canSeeFinancials = useMemo(
-    () => Boolean(user && ['super_admin', 'manager', 'accountant'].includes(user.role)),
+    () => Boolean(user && ['super_admin', 'manager'].includes(user.role)),
     [user]
   );
 

@@ -6,14 +6,18 @@ import { ROLES } from '../config/constants.js';
 const router = Router();
 router.use(protect);
 
-// Only managers+ can browse the full client list. Customer service /
-// accountants see clients only through their assigned tasks, not directly.
-const managersPlus = authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER);
+// Managers and accountants can browse the full client list. Customer
+// service users see clients only through their assigned tasks, not directly.
+const managersPlusAccountant = authorize(
+  ROLES.SUPER_ADMIN,
+  ROLES.MANAGER,
+  ROLES.ACCOUNTANT,
+);
 
-router.get('/stats', managersPlus, clientController.clientStats);
-router.get('/', managersPlus, clientController.listClients);
-router.get('/:id', managersPlus, clientController.getClient);
-router.get('/:id/summary', managersPlus, clientController.clientSummary);
+router.get('/stats', managersPlusAccountant, clientController.clientStats);
+router.get('/', managersPlusAccountant, clientController.listClients);
+router.get('/:id', managersPlusAccountant, clientController.getClient);
+router.get('/:id/summary', managersPlusAccountant, clientController.clientSummary);
 
 router.post(
   '/',

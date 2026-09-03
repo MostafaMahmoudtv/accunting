@@ -87,7 +87,7 @@ const App = () => {
           <Route
             path="/clients"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager']}>
+              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
                 <Clients />
               </ProtectedRoute>
             }
@@ -95,7 +95,7 @@ const App = () => {
           <Route
             path="/clients/:id"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager']}>
+              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
                 <ClientProfile />
               </ProtectedRoute>
             }
@@ -105,7 +105,7 @@ const App = () => {
           <Route
             path="/workflows"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager']}>
+              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
                 <Workflows />
               </ProtectedRoute>
             }
@@ -113,7 +113,7 @@ const App = () => {
           <Route
             path="/payments"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
+              <ProtectedRoute roles={['super_admin', 'manager']}>
                 <Payments />
               </ProtectedRoute>
             }
@@ -121,7 +121,7 @@ const App = () => {
           <Route
             path="/revenue"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
+              <ProtectedRoute roles={['super_admin', 'manager']}>
                 <Revenue />
               </ProtectedRoute>
             }
@@ -129,7 +129,7 @@ const App = () => {
           <Route
             path="/expenses"
             element={
-              <ProtectedRoute roles={['super_admin', 'manager', 'accountant']}>
+              <ProtectedRoute roles={['super_admin', 'manager', 'customer_service']}>
                 <Expenses />
               </ProtectedRoute>
             }

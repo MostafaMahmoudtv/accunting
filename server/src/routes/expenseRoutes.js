@@ -6,9 +6,14 @@ import { ROLES } from '../config/constants.js';
 const router = Router();
 router.use(protect);
 
-router.get('/', expenseController.listExpenses);
-router.post('/', authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER), expenseController.createExpense);
-router.put('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER), expenseController.updateExpense);
-router.delete('/:id', authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER), expenseController.deleteExpense);
+// Managers, super admins, and customer service can record expenses.
+// Accountants are intentionally excluded (they focus on tasks/clients/workflows).
+const canRecord = authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER, ROLES.CUSTOMER_SERVICE);
+const canManage = authorize(ROLES.SUPER_ADMIN, ROLES.MANAGER);
+
+router.get('/', canRecord, expenseController.listExpenses);
+router.post('/', canRecord, expenseController.createExpense);
+router.put('/:id', canManage, expenseController.updateExpense);
+router.delete('/:id', canManage, expenseController.deleteExpense);
 
 export default router;

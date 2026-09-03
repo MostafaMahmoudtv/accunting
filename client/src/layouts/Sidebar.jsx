@@ -63,18 +63,21 @@ const Sidebar = ({ open, onClose }) => {
     if (key === "users") return hasRole("super_admin", "manager");
     if (key === "employees") return hasRole("super_admin", "manager");
     if (key === "salaries") return hasRole("super_admin", "manager");
-    if (key === "workflows") return hasRole("super_admin", "manager");
-    if (key === "clients") return hasRole("super_admin", "manager");
-    // Financial screens — customer service has none of these. Accountants can
-    // see revenue/expenses/payments but not reports or activity.
-    if (key === "revenue")
-      return hasRole("super_admin", "manager", "accountant");
-    if (key === "expenses")
-      return hasRole("super_admin", "manager", "accountant");
-    if (key === "payments")
-      return hasRole("super_admin", "manager", "accountant");
     if (key === "reports") return hasRole("super_admin", "manager");
     if (key === "activity") return hasRole("super_admin", "manager");
+    // Payments and revenue — manager + super_admin only.
+    if (key === "revenue") return hasRole("super_admin", "manager");
+    if (key === "payments") return hasRole("super_admin", "manager");
+    // Expenses — managers and customer service can record expenses, but
+    // accountants are limited to tasks/clients/workflows.
+    if (key === "expenses")
+      return hasRole("super_admin", "manager", "customer_service");
+    // Operational screens — accountants see clients, workflows, and tasks but
+    // not the financial records.
+    if (key === "workflows")
+      return hasRole("super_admin", "manager", "accountant");
+    if (key === "clients")
+      return hasRole("super_admin", "manager", "accountant");
     return true;
   });
 

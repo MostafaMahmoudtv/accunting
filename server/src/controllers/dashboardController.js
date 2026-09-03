@@ -11,8 +11,9 @@ import { startOfMonth, endOfMonth } from '../utils/dates.js';
 const isOverdue = (d) => d && new Date(d) < new Date() && !(d?.completedAt);
 
 const isManagerOrAdmin = (role) => [ROLES.SUPER_ADMIN, ROLES.MANAGER].includes(role);
-const canSeeFinancials = (role) =>
-  [ROLES.SUPER_ADMIN, ROLES.MANAGER, ROLES.ACCOUNTANT].includes(role);
+// Financials (revenue, expenses, payments) are restricted to managers+.
+// Accountants work on tasks, clients, and workflows — not money.
+const canSeeFinancials = (role) => isManagerOrAdmin(role);
 
 export const dashboardStats = asyncHandler(async (req, res) => {
   const now = new Date();
