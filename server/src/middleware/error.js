@@ -9,7 +9,13 @@ export const notFound = (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
   // Mongoose validation error
   if (err.name === 'ValidationError') {
-    const errors = Object.values(err.errors).map((e) => ({ field: e.path, message: e.message }));
+    // Mongoose shape: { errors: { fieldName: { path, message, ... } } }
+    // Flatten to a `{ field: message }` map so the frontend can map it
+    // straight onto RHF fields.
+    const errors = {};
+    for (const [path, detail] of Object.entries(err.errors || {})) {
+      errors[path] = detail.message || 'Invalid value';
+    }
     console.warn('⚠️  Validation error on', req.method, req.originalUrl, '→', errors);
     return fail(res, 422, 'Validation failed', errors);
   }

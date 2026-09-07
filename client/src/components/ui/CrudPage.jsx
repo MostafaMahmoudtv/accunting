@@ -48,6 +48,7 @@ const CrudPage = ({
   const [openCreate, setOpenCreate] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [formErrors, setFormErrors] = useState(null);
 
   const params = new URLSearchParams({ page, limit: 15 });
   if (q) params.set('q', q);
@@ -65,9 +66,17 @@ const CrudPage = ({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [queryKey] });
       setOpenCreate(false);
+      setFormErrors(null);
       toast.success(t('common.success'));
     },
-    onError: (err) => toast.error(err.response?.data?.message || t('common.error')),
+    onError: (err) => {
+      const data = err.response?.data;
+      if (data?.errors && typeof data.errors === 'object') {
+        setFormErrors(data.errors);
+      } else {
+        toast.error(data?.message || t('common.error'));
+      }
+    },
   });
 
   const updateMut = useMutation({
@@ -75,9 +84,17 @@ const CrudPage = ({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [queryKey] });
       setEditTarget(null);
+      setFormErrors(null);
       toast.success(t('common.success'));
     },
-    onError: (err) => toast.error(err.response?.data?.message || t('common.error')),
+    onError: (err) => {
+      const data = err.response?.data;
+      if (data?.errors && typeof data.errors === 'object') {
+        setFormErrors(data.errors);
+      } else {
+        toast.error(data?.message || t('common.error'));
+      }
+    },
   });
 
   const deleteMut = useMutation({
@@ -161,23 +178,25 @@ const CrudPage = ({
         </div>
       </div>
 
-      <Modal open={openCreate} onClose={() => setOpenCreate(false)} title={addLabel} size="xl">
+      <Modal open={openCreate} onClose={() => { setOpenCreate(false); setFormErrors(null); }} title={addLabel} size="xl">
         <FormComponent
           {...formProps}
           defaultValues={defaultValues}
           loading={createMut.isPending}
-          onCancel={() => setOpenCreate(false)}
+          serverErrors={formErrors}
+          onCancel={() => { setOpenCreate(false); setFormErrors(null); }}
           onSubmit={(v) => createMut.mutate(v)}
         />
       </Modal>
 
-      <Modal open={!!editTarget} onClose={() => setEditTarget(null)} title={t('common.edit')} size="xl">
+      <Modal open={!!editTarget} onClose={() => { setEditTarget(null); setFormErrors(null); }} title={t('common.edit')} size="xl">
         {editTarget && (
           <FormComponent
             {...formProps}
             defaultValues={editTarget}
             loading={updateMut.isPending}
-            onCancel={() => setEditTarget(null)}
+            serverErrors={formErrors}
+            onCancel={() => { setEditTarget(null); setFormErrors(null); }}
             onSubmit={(v) => updateMut.mutate({ id: editTarget._id, body: v })}
           />
         )}
