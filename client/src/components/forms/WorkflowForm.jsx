@@ -4,9 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea } from '../ui/FormFields';
 import { Plus, Trash2 } from 'lucide-react';
 
-const WorkflowForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
+const WorkflowForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors }) => {
   const { t } = useTranslation();
-  const { register, control, handleSubmit, reset } = useForm({
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm({
     defaultValues: defaultValues || { name: '', description: '', steps: [{ name: '', order: 1 }] },
   });
   const { fields, append, remove } = useFieldArray({ control, name: 'steps' });
@@ -25,14 +32,32 @@ const WorkflowForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     setList(fields.map((f) => f.id));
   }, [fields]);
 
+  // Map server-side validation errors onto RHF fields so they render inline.
+  // Server can return field-level errors as { name: 'Required' } or
+  // { 'steps.0.name': 'Required' } for nested field array entries.
+  useEffect(() => {
+    if (!serverErrors) return;
+    for (const [field, message] of Object.entries(serverErrors)) {
+      setError(field, { type: 'server', message });
+    }
+  }, [serverErrors, setError]);
+
   return (
     <form onSubmit={handleSubmit((v) => onSubmit({
       ...v,
       steps: (v.steps || []).map((s, idx) => ({ ...s, order: idx + 1 })),
     }))} className="space-y-4">
       <div className="grid grid-cols-1 gap-3">
-        <FormInput label={t('common.name')} {...register('name', { required: true })} />
-        <FormTextarea label={t('common.description')} {...register('description')} />
+        <FormInput
+          label={t('common.name')}
+          {...register('name', { required: true })}
+          error={errors.name?.message}
+        />
+        <FormTextarea
+          label={t('common.description')}
+          {...register('description')}
+          error={errors.description?.message}
+        />
       </div>
 
       <div>
@@ -48,16 +73,21 @@ const WorkflowForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
         </div>
         <div className="space-y-2">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center gap-2">
-              <span className="text-xs text-ink-500 w-5 sm:w-6 text-center shrink-0">{index + 1}.</span>
-              <input
-                className="input flex-1 min-w-0"
-                placeholder={t('workflows.stepName')}
-                {...register(`steps.${index}.name`, { required: true })}
-              />
-              <button type="button" className="btn-ghost p-2 text-rose-600 shrink-0 touch-manipulation" onClick={() => remove(index)} aria-label="Remove step">
-                <Trash2 className="h-4 w-4" />
-              </button>
+            <div key={field.id} className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-ink-500 w-5 sm:w-6 text-center shrink-0">{index + 1}.</span>
+                <input
+                  className={`input flex-1 min-w-0 ${errors?.steps?.[index]?.name ? 'border-rose-500' : ''}`}
+                  placeholder={t('workflows.stepName')}
+                  {...register(`steps.${index}.name`, { required: true })}
+                />
+                <button type="button" className="btn-ghost p-2 text-rose-600 shrink-0 touch-manipulation" onClick={() => remove(index)} aria-label="Remove step">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              {errors?.steps?.[index]?.name && (
+                <p className="text-xs text-rose-600 ps-7">{errors.steps[index].name.message}</p>
+              )}
             </div>
           ))}
         </div>

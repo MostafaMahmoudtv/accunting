@@ -42,7 +42,7 @@ const schema = (t) =>
     notes: z.string().optional(),
   });
 
-const ClientForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
+const ClientForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors }) => {
   const { t } = useTranslation();
   const { data: users } = useQuery({
     queryKey: ['users-list'],
@@ -55,6 +55,7 @@ const ClientForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     formState: { errors },
     watch,
     reset,
+    setError,
   } = useForm({
     resolver: zodResolver(schema(t)),
     mode: 'onChange',
@@ -77,6 +78,14 @@ const ClientForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     }
   }, [defaultValues, reset]);
 
+  // Map server-side validation errors onto RHF fields so they render inline.
+  useEffect(() => {
+    if (!serverErrors) return;
+    for (const [field, message] of Object.entries(serverErrors)) {
+      setError(field, { type: 'server', message });
+    }
+  }, [serverErrors, setError]);
+
   const clientType = watch('clientType');
   const accountants = users?.filter((u) => ['accountant', 'manager', 'super_admin'].includes(u.role)) || [];
   const csList = users?.filter((u) => ['manager', 'super_admin'].includes(u.role)) || [];
@@ -85,49 +94,49 @@ const ClientForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <FormInput label={t('common.name')} {...register('name')} error={errors.name?.message} />
-        <FormInput label={t('clients.companyName')} {...register('companyName')} />
-        <FormInput label={t('common.phone')} {...register('phone')} />
+        <FormInput label={t('clients.companyName')} {...register('companyName')} error={errors.companyName?.message} />
+        <FormInput label={t('common.phone')} {...register('phone')} error={errors.phone?.message} />
         <FormInput label={t('common.email')} type="email" {...register('email')} error={errors.email?.message} />
-        <FormInput label={t('clients.taxNumber')} {...register('taxNumber')} />
-        <FormSelect label={t('clients.clientType')} {...register('clientType')}>
+        <FormInput label={t('clients.taxNumber')} {...register('taxNumber')} error={errors.taxNumber?.message} />
+        <FormSelect label={t('clients.clientType')} {...register('clientType')} error={errors.clientType?.message}>
           {CLIENT_TYPES.map((c) => (
             <option key={c} value={c}>{t(`clients.${c === 'one_time' ? 'oneTime' : c}`)}</option>
           ))}
         </FormSelect>
         {clientType === 'monthly' && (
-          <FormInput label={t('clients.monthlyFee')} type="number" step="0.01" {...register('monthlyFee')} />
+          <FormInput label={t('clients.monthlyFee')} type="number" step="0.01" {...register('monthlyFee')} error={errors.monthlyFee?.message} />
         )}
-        <FormInput label={t('clients.startDate')} type="date" {...register('startDate')} />
+        <FormInput label={t('clients.startDate')} type="date" {...register('startDate')} error={errors.startDate?.message} />
         {(clientType === 'temporary' || clientType === 'one_time') && (
-          <FormInput label={t('clients.endDate')} type="date" {...register('endDate')} />
+          <FormInput label={t('clients.endDate')} type="date" {...register('endDate')} error={errors.endDate?.message} />
         )}
         {clientType === 'monthly' && (
-          <FormInput label={t('clients.billingDate')} type="date" {...register('billingDate')} />
+          <FormInput label={t('clients.billingDate')} type="date" {...register('billingDate')} error={errors.billingDate?.message} />
         )}
-        <FormSelect label={t('clients.paymentStatus')} {...register('paymentStatus')}>
+        <FormSelect label={t('clients.paymentStatus')} {...register('paymentStatus')} error={errors.paymentStatus?.message}>
           {PAYMENT_STATUS.map((p) => (
             <option key={p} value={p}>{t(`common.${p === 'partially_paid' ? 'partial' : p}`)}</option>
           ))}
         </FormSelect>
-        <FormSelect label={t('clients.status')} {...register('status')}>
+        <FormSelect label={t('clients.status')} {...register('status')} error={errors.status?.message}>
           {CLIENT_STATUS.map((s) => (
             <option key={s} value={s}>{t(`clients.${s}`)}</option>
           ))}
         </FormSelect>
-        <FormSelect label={t('clients.assignedAccountant')} {...register('assignedAccountant')}>
+        <FormSelect label={t('clients.assignedAccountant')} {...register('assignedAccountant')} error={errors.assignedAccountant?.message}>
           <option value="">—</option>
           {accountants.map((u) => (
             <option key={u._id} value={u._id}>{u.name}</option>
           ))}
         </FormSelect>
-        <FormSelect label={t('clients.assignedCustomerService')} {...register('assignedCustomerService')}>
+        <FormSelect label={t('clients.assignedCustomerService')} {...register('assignedCustomerService')} error={errors.assignedCustomerService?.message}>
           <option value="">—</option>
           {csList.map((u) => (
             <option key={u._id} value={u._id}>{u.name}</option>
           ))}
         </FormSelect>
-        <FormInput label={t('common.address')} className="md:col-span-2" {...register('address')} />
-        <FormTextarea label={t('common.notes')} className="md:col-span-2" {...register('notes')} />
+        <FormInput label={t('common.address')} className="md:col-span-2" {...register('address')} error={errors.address?.message} />
+        <FormTextarea label={t('common.notes')} className="md:col-span-2" {...register('notes')} error={errors.notes?.message} />
       </div>
       <FormFooter onCancel={onCancel} loading={loading} />
     </form>

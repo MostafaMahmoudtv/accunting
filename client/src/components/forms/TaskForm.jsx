@@ -25,7 +25,7 @@ const schema = (t) =>
     paymentStatus: z.enum(PAYMENT_STATUS).optional(),
   });
 
-const TaskForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
+const TaskForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors }) => {
   const { t } = useTranslation();
   const { data: clients } = useQuery({
     queryKey: ['my-clients-options'],
@@ -41,6 +41,7 @@ const TaskForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm({
     resolver: zodResolver(schema(t)),
     defaultValues: defaultValues || {
@@ -62,39 +63,47 @@ const TaskForm = ({ defaultValues, onSubmit, onCancel, loading }) => {
     }
   }, [defaultValues, reset]);
 
+  // Map server-side validation errors onto RHF fields so they render inline.
+  useEffect(() => {
+    if (!serverErrors) return;
+    for (const [field, message] of Object.entries(serverErrors)) {
+      setError(field, { type: 'server', message });
+    }
+  }, [serverErrors, setError]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <FormInput label={t('tasks.fields.title')} {...register('title')} error={errors.title?.message} className="md:col-span-2" />
-        <FormTextarea label={t('tasks.fields.description')} {...register('description')} className="md:col-span-2" />
-        <FormSelect label={t('tasks.fields.client')} {...register('client')}>
+        <FormTextarea label={t('tasks.fields.description')} {...register('description')} error={errors.description?.message} className="md:col-span-2" />
+        <FormSelect label={t('tasks.fields.client')} {...register('client')} error={errors.client?.message}>
           <option value="">—</option>
           {clients?.map((c) => (
             <option key={c._id} value={c._id}>{c.name}</option>
           ))}
         </FormSelect>
-        <FormInput label={t('tasks.fields.service')} {...register('service')} />
-        <FormSelect label={t('tasks.fields.assignedTo')} {...register('assignedTo')}>
+        <FormInput label={t('tasks.fields.service')} {...register('service')} error={errors.service?.message} />
+        <FormSelect label={t('tasks.fields.assignedTo')} {...register('assignedTo')} error={errors.assignedTo?.message}>
           <option value="">—</option>
           {users?.map((u) => (
             <option key={u._id} value={u._id}>{u.name}</option>
           ))}
         </FormSelect>
-        <FormSelect label={t('tasks.fields.priority')} {...register('priority')}>
+        <FormSelect label={t('tasks.fields.priority')} {...register('priority')} error={errors.priority?.message}>
           {TASK_PRIORITY.map((p) => (
             <option key={p} value={p}>{t(`tasks.priority.${p}`)}</option>
           ))}
         </FormSelect>
-        <FormSelect label={t('tasks.fields.status')} {...register('status')}>
+        <FormSelect label={t('tasks.fields.status')} {...register('status')} error={errors.status?.message}>
           {TASK_STATUS.map((s) => (
             <option key={s} value={s}>{t(`tasks.status.${s}`)}</option>
           ))}
         </FormSelect>
-        <FormInput label={t('tasks.fields.startDate')} type="date" {...register('startDate')} />
-        <FormInput label={t('tasks.fields.dueDate')} type="date" {...register('dueDate')} />
-        <FormInput label={t('tasks.fields.estimatedHours')} type="number" step="0.5" {...register('estimatedHours')} />
-        <FormInput label={t('tasks.fields.actualHours')} type="number" step="0.5" {...register('actualHours')} />
-        <FormSelect label={t('tasks.fields.paymentStatus')} {...register('paymentStatus')}>
+        <FormInput label={t('tasks.fields.startDate')} type="date" {...register('startDate')} error={errors.startDate?.message} />
+        <FormInput label={t('tasks.fields.dueDate')} type="date" {...register('dueDate')} error={errors.dueDate?.message} />
+        <FormInput label={t('tasks.fields.estimatedHours')} type="number" step="0.5" {...register('estimatedHours')} error={errors.estimatedHours?.message} />
+        <FormInput label={t('tasks.fields.actualHours')} type="number" step="0.5" {...register('actualHours')} error={errors.actualHours?.message} />
+        <FormSelect label={t('tasks.fields.paymentStatus')} {...register('paymentStatus')} error={errors.paymentStatus?.message}>
           {PAYMENT_STATUS.map((p) => (
             <option key={p} value={p}>{t(`common.${p === 'partially_paid' ? 'partial' : p}`)}</option>
           ))}
