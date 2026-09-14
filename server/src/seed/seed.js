@@ -25,6 +25,15 @@ import { startOfMonth, endOfMonth } from '../utils/dates.js';
 
 dotenv.config();
 
+// ⚠️  SAFETY: this script is a "reset to demo" tool. By default it is
+// INSERT-ONLY — it skips the destructive clearDatabase() step entirely, so
+// running `npm run seed` against a live database can never wipe real data.
+//
+// To actually wipe and re-seed, pass --force (or set RESET=true). This makes
+// the data-deleting behaviour explicit and opt-in, instead of the default.
+const FORCE_RESET =
+  process.argv.includes('--force') || process.env.RESET === 'true';
+
 const clearDatabase = async () => {
   await Promise.all([
     User.deleteMany({}),
@@ -64,7 +73,22 @@ const run = async () => {
 
   console.log('🌱 Seeding database…');
 
-  await clearDatabase();
+  if (FORCE_RESET) {
+    console.warn('⚠️  RESET mode: all existing data will be DELETED before re-seeding.');
+    await clearDatabase();
+  } else {
+    // Insert-only mode: if the database already contains the demo data, do
+    // nothing. This makes a bare `npm run seed` a safe no-op on a live
+    // database instead of a crash (duplicate key) or a silent duplicate.
+    const existingAdmin = await User.findOne({ email: 'admin@demo.io' });
+    if (existingAdmin) {
+      console.log('✅ Database already contains demo data — nothing to do.');
+      console.log('    To wipe and re-seed, run:  npm run seed -- --force');
+      await mongoose.connection.close();
+      process.exit(0);
+    }
+    console.log('ℹ️  Insert-only mode (default). Existing data is preserved.');
+  }
 
   // --- USERS ---
   const password = 'Password123!';
