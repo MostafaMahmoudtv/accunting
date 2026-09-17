@@ -47,7 +47,7 @@ const TaskForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors }) 
     defaultValues: defaultValues || {
       priority: 'medium',
       status: 'new',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'paid',
     },
   });
 

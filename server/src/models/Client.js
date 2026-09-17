@@ -25,7 +25,7 @@ const clientSchema = new mongoose.Schema(
     paymentStatus: {
       type: String,
       enum: PAYMENT_STATUS,
-      default: 'unpaid',
+      default: 'paid',
       index: true,
     },
     assignedAccountant: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },

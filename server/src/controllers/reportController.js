@@ -24,7 +24,7 @@ export const financialReport = asyncHandler(async (req, res) => {
   const monthProfit = await getNetProfit();
   const [outstandingAgg, paidAgg] = await Promise.all([
     Payment.aggregate([
-      { $match: { status: { $in: ['unpaid', 'partially_paid', 'overdue'] } } },
+      { $match: { status: { $in: ['partially_paid'] } } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]),
     Payment.aggregate([{ $match: { status: 'paid' } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),

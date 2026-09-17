@@ -21,7 +21,7 @@ const PaymentForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors 
     setError,
     formState: { errors },
   } = useForm({
-    defaultValues: defaultValues || { status: 'unpaid', paymentMethod: 'bank_transfer' },
+    defaultValues: defaultValues || { status: 'paid', paymentMethod: 'bank_transfer' },
   });
 
   useEffect(() => {

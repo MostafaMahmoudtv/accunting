@@ -72,7 +72,7 @@ export const dashboardStats = asyncHandler(async (req, res) => {
     }),
     noFinancials
       ? Promise.resolve([])
-      : Payment.aggregate([{ $match: { status: { $in: ['unpaid', 'partially_paid'] } } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
+      : Payment.aggregate([{ $match: { status: { $in: ['partially_paid'] } } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),
     noFinancials
       ? Promise.resolve([])
       : Payment.aggregate([{ $match: { status: 'overdue' } }, { $group: { _id: null, total: { $sum: '$amount' } } }]),

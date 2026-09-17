@@ -62,7 +62,7 @@ const ClientForm = ({ defaultValues, onSubmit, onCancel, loading, serverErrors }
     defaultValues: defaultValues || {
       clientType: 'monthly',
       status: 'active',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'paid',
       monthlyFee: 0,
     },
   });

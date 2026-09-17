@@ -11,7 +11,7 @@ export const CLIENT_TYPES = ['monthly', 'temporary', 'one_time'];
 
 export const CLIENT_STATUS = ['active', 'inactive', 'archived'];
 
-export const PAYMENT_STATUS = ['paid', 'unpaid', 'partially_paid', 'overdue'];
+export const PAYMENT_STATUS = ['paid', 'partially_paid'];
 
 export const TASK_STATUS = [
   'new',

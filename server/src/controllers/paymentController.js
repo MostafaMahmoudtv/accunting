@@ -11,11 +11,9 @@ const refreshClientStatus = async (clientId) => {
   const payments = await Payment.find({ client: clientId });
   if (!payments.length) return;
   const allPaid = payments.every((p) => p.status === 'paid');
-  const anyOverdue = payments.some((p) => p.status === 'overdue' || (p.status !== 'paid' && p.dueDate && p.dueDate < new Date()));
   const anyPart = payments.some((p) => p.status === 'partially_paid');
-  let status = 'unpaid';
+  let status = 'paid';
   if (allPaid) status = 'paid';
-  else if (anyOverdue) status = 'overdue';
   else if (anyPart) status = 'partially_paid';
   await Client.findByIdAndUpdate(clientId, { paymentStatus: status });
 };
@@ -92,12 +90,7 @@ export const paymentStats = asyncHandler(async (req, res) => {
   const total = await Payment.aggregate([
     { $group: { _id: '$status', total: { $sum: '$amount' }, count: { $sum: 1 } } },
   ]);
-  const map = { paid: 0, unpaid: 0, partially_paid: 0, overdue: 0 };
+  const map = { paid: 0, partially_paid: 0 };
   for (const row of total) map[row._id] = { total: row.total, count: row.count };
-  // Detect overdue
-  await Payment.updateMany(
-    { status: { $nin: ['paid', 'cancelled'] }, dueDate: { $lt: new Date() } },
-    { $set: { status: 'overdue' } }
-  );
   return success(res, map);
 });

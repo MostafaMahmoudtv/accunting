@@ -35,7 +35,7 @@ const taskSchema = new mongoose.Schema(
     estimatedHours: { type: Number, default: 0 },
     actualHours: { type: Number, default: 0 },
     price: { type: Number, default: 0 },
-    paymentStatus: { type: String, enum: PAYMENT_STATUS, default: 'unpaid' },
+    paymentStatus: { type: String, enum: PAYMENT_STATUS, default: 'paid' },
     workflow: { type: mongoose.Schema.Types.ObjectId, ref: 'Workflow' },
     attachments: [attachmentSchema],
     comments: [commentSchema],

@@ -242,7 +242,7 @@ const run = async () => {
       email: 'finance@safa.example',
       address: 'Dammam',
       taxNumber: '300000000000003',
-      paymentStatus: 'overdue',
+      paymentStatus: 'partially_paid',
     },
     {
       name: 'Mawared Tech',
@@ -268,7 +268,7 @@ const run = async () => {
       email: 'info@rouh.example',
       address: 'Mecca',
       taxNumber: '300000000000005',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'partially_paid',
     },
     {
       name: 'Tarek Al-Sayed',
@@ -280,7 +280,7 @@ const run = async () => {
       email: 'tarek@example.com',
       address: 'Medina',
       taxNumber: '',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'partially_paid',
     },
     {
       name: 'Dana Real Estate',
@@ -304,7 +304,7 @@ const run = async () => {
       email: 'hello@falak.example',
       address: 'Jeddah',
       taxNumber: '',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'partially_paid',
     },
     {
       name: 'Faisal Al-Harbi',
@@ -340,7 +340,7 @@ const run = async () => {
       email: 'studio@kayan.example',
       address: 'Riyadh',
       taxNumber: '',
-      paymentStatus: 'unpaid',
+      paymentStatus: 'partially_paid',
     },
   ];
 
@@ -471,10 +471,8 @@ const run = async () => {
     const status = paid
       ? 'paid'
       : i % 3 === 0
-        ? 'overdue'
-        : i % 2 === 0
-          ? 'unpaid'
-          : 'partially_paid';
+        ? 'partially_paid'
+        : 'paid';
 
     const payment = await Payment.create({
       client: client._id,

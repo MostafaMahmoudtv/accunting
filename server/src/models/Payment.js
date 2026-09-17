@@ -9,7 +9,7 @@ const paymentSchema = new mongoose.Schema(
     paymentDate: { type: Date },
     dueDate: { type: Date, index: true },
     paymentMethod: { type: String, enum: PAYMENT_METHODS, default: 'bank_transfer' },
-    status: { type: String, enum: PAYMENT_STATUS, default: 'unpaid', index: true },
+    status: { type: String, enum: PAYMENT_STATUS, default: 'paid', index: true },
     notes: { type: String },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
