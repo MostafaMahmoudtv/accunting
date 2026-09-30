@@ -23,7 +23,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://web-production-fb0e0.up.railway.app',
+        target: 'https://accounting.hejazfinancial.com',
         changeOrigin: true,
       },
     },
