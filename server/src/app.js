@@ -39,10 +39,13 @@ app.set('trust proxy', 1);
 app.use(helmet());
 
 // Allow multiple origins in production (comma-separated) and the dev port
-const allowedOrigins = (process.env.CLIENT_URL || 'http://https://accunting-client.vercel.app')
+const allowedOrigins = [
+  ...(process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
-  .filter(Boolean);
+  .filter(Boolean),
+  'https://accunting-client.vercel.app',
+];
 
 app.use(
   cors({
