@@ -1,0 +1,5 @@
+$kind: collection
+description: |-
+  API collection for the Accounting Management System.
+
+  Includes authentication, user management, clients, payments, expenses, revenues, salaries, tasks, and workflows.
